@@ -1,2 +1,5 @@
 #Codebook
 
+Initial Data File with columns reordered to easy analysis
+In addition, three columns that had no variation were deleted (Over18,EMployeeCount,StandardHours)
+https://github.com/noellebr/CaseStudy2/blob/master/CaseStudy2reorder.csv
