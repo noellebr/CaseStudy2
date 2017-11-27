@@ -1,0 +1,622 @@
+---
+
+output: html_document
+---
+
+
+```{r setup, include=TRUE, echo=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+require("ggplot2")
+require ("plyr")
+
+```
+## Employment Data Analysis {.tabset .tabset-fade}
+
+The secrets to getting ahead in this company:
+1.Work for many years with several different companies before coming to this company. Your Total Time Worked will provide you with a higher job level and higher monthly income.
+2.Change Managers frequently.  The longer you stay with a manager the longer the time before you will receive you next promotion. 
+3.Aspire and work toward being a manager or director.  These job roles make more money. If you stay with the company long enough and have many years of total work time before coming to the company, you should be able to obtain one of these position.
+4.Do not work as a Sales Representative.  This job role makes less money.
+5. Don't worry about job performance ratings.  Everyone receives either an outstanding or an excellent rating.  The ratings have not impact on your monthly income.
+
+
+
+
+### DataSet
+
+```{r include=TRUE, echo=FALSE}
+# Read the datafile
+attrit <- read.csv("CaseStudy2-data.csv")
+# Rearrange the columns to aid analysis
+
+AttritColNames <- c( "Attrition", "BusinessTravel","Department","EducationField","Gender",  "JobRole", "Over18", "OverTime",  "MaritalStatus", "Age", "DailyRate","DistanceFromHome","Education",  "EmployeeCount", "EmployeeNumber", "EnvironmentSatisfaction",  "HourlyRate", "JobInvolvement", "JobLevel","JobSatisfaction","MonthlyIncome", "MonthlyRate", "NumCompaniesWorked",  "PercentSalaryHike", "PerformanceRating", "RelationshipSatisfaction", "StandardHours", "StockOptionLevel", "TotalWorkingYears", "TrainingTimesLastYear","WorkLifeBalance", "YearsAtCompany", "YearsInCurrentRole", "YearsSinceLastPromotion","YearsWithCurrManager")
+attrit <- attrit[,AttritColNames]
+
+#Data Set Description
+cat("Number of employees in the dataset:")
+cat(nrow(attrit))
+cat("Number of variables in the dataset:")
+cat(ncol(attrit))
+
+cat ("Number of employees who have left the company and the number if employees who remain:")
+print.data.frame(as.data.frame(table(attrit$Attrition,dnn=list("Left"))),row.names = FALSE)
+
+# Eliminate variables that have no variation (constant values)
+cat("3 Variables had no variation,that is, are constants and will not aid in the analysis")
+cat("These variables are removed from the dataset.")
+
+attrit$EmployeeCount <- NULL
+attrit$StandardHours <- NULL
+attrit$Over18 <- NULL
+
+cat("Number of variables in the dataset, after removing constants:")
+cat(ncol(attrit))
+
+cat("Count of field types in the dataset:")
+table(as.data.frame(sapply(attrit,class)))
+
+
+
+```
+#### Job Role Pareto 
+
+```{r}
+ggplot(data=as.data.frame(table(attrit$Department,attrit$JobRole,dnn=list("Department","JobRole"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = Department)) +
+geom_bar(stat="identity") + coord_flip() + ggtitle("Number of Employees per Job Role by Department") + xlab("") + ylab("")
+```
+
+##### The Job Role "Manager" is the only Job Role that is in multiple departments
+##### To aid analysis the values of JobRole for the Managers will be recoded
+
+```{r}
+# Recode Managers
+attrit$JobRole <-with(attrit, ifelse(attrit$JobRole == "Manager",paste(attrit$Department,attrit$JobRole), as.character(attrit$JobRole)))
+attrit$JobRole <- as.factor(attrit$JobRole)
+ggplot(data=as.data.frame(table(attrit$Department,attrit$JobRole,dnn=list("Department","JobRole"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = Department)) +
+geom_bar(stat="identity") + coord_flip() + ggtitle("Number of Employees per Job Role by Department \nafter recoding") + xlab("") + ylab("")
+
+#Recode the variable "JobRole" to a numeric value for modeling
+attrit$JRCode[attrit$JobRole=="Healthcare Representative"] <- 1L
+attrit$JRCode[attrit$JobRole=="Human Resources"] <- 2L
+attrit$JRCode[attrit$JobRole=="Laboratory Technician"] <- 3L
+attrit$JRCode[attrit$JobRole=="Manufacturing Director"] <- 4L
+attrit$JRCode[attrit$JobRole=="Research Director"] <- 5L
+attrit$JRCode[attrit$JobRole=="Sales Executive"] <- 6L
+attrit$JRCode[attrit$JobRole=="Research Scientist"] <- 7L
+attrit$JRCode[attrit$JobRole=="Sales Representative"] <- 8L
+attrit$JRCode[attrit$JobRole=="Human Resources Manager"] <- 9L
+attrit$JRCode[attrit$JobRole=="Research & Development Manager"] <- 10L
+0.0008
+
+#Create a dataframe of current employees only
+noattrit <- attrit[attrit$Attrition=="No",]
+noattrit$Attrit <- NULL
+
+```
+
+
+
+
+### Attrition Analysis
+
+tab content 2
+
+### Job Roles
+#### Note: All analysis has been performed on employees only (No attrition participants
+
+####Key Findings
+
+##### 1) Manager Job Role:
+#####   a) only job role that exists in all departments.  All other job roles are unique to a department.
+#####   b) have the longest average duration at the company.
+##### 2) Managers and Directors
+#####   a) tend to be older than people in other job roles.
+#####   b) have higher Job Levels.
+#####   c) have  higher Monthly Income
+##### 3) Manufacturing Director
+#####   a) the only Job Role where Males do not outnumber Females.
+##### 4) Human Resource Manager
+#####   a) is the only Role which does not have 'Low' level of job involvement
+#####   b) No PhDs (characteristic in common with Sale Reps)
+#####   c) All HR Managers have some College level education (a characteristic unique to this Job Role)
+##### 5) Sales Reps and Reseach Scientists
+#####   a) have the lowest Job Levels.
+##### 6) Sales Reps
+#####   a) is the only Job Role which has no employees with NumWorked = 9!!
+#####  b) have the lowest average duration at the company.
+#####  c) change managers most frequently, while directors and managers tend to stay with the same manager for a longer time.
+#####  d) No PhDs (characteristic in common with HR Managers)
+#####  e) the highest percentage of employees with college-level education (25%)
+
+
+
+```{r}
+
+ggplot(data=as.data.frame(table(noattrit$Department,noattrit$JobRole,dnn=list("Department","JobRole"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = Department)) +
+geom_bar(stat="identity") + coord_flip() + ggtitle("Number of Employees per Job Role by Department") + xlab("") + ylab("")
+```
+
+#### Linear Regression Modeling (See Experiment Tab) suggests Education Field, Age, Job Involvement, Gender, Job Level, Monthly Income, Number of Companies Worked, Years At Company and Years with Current Manager are different between of Job Roles
+
+```{r}
+ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$EducationField,dnn=list("JobRole","EducationField"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = EducationField)) +
+geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("# of Employees per Job Role by EducationField") + xlab("") + ylab("# of Employees")
+```
+
+##### Observations
+##### 1.All Departments have a mix of educational fields
+##### 2.People with Education in Marketing only work in the Sales Department
+##### 3.People with Education in Human Resources work in the Human Resources Department
+##### 4.R&D is predominantly composed of people with Life Sciences and Medical Education 
+
+
+```{r}
+noattrit$JobRole <-with(noattrit, ifelse(noattrit$JobRole=="Manager", paste(noattrit$Department,noattrit$JobRole), as.character(noattrit$JobRole)))
+ggplot(data=noattrit,aes(x= JobRole,y=Age)) +
+geom_boxplot() + coord_flip() + ggtitle("Age by Job Role") + xlab("")+ylab("Age")
+ ggplot(data=noattrit, aes(x=noattrit$Age,fill=noattrit$JobRole)) + geom_histogram(position = "dodge",bins=4)
+  summary(noattrit$Age)
+  results <- lm(noattrit$JRCode~noattrit$Age)
+summary(results)
+```
+
+#####Observations
+#####1. Managers and Directors tend be older than people in other roles
+#####2. The oldest employee is a Sales Executive (60 years old)
+#####3. The youngest employee is a Laboratory Technician (18 years old)
+
+
+```{r}
+ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$Gender,dnn=list("JobRole","Gender"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = Gender)) +
+geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Males OutNumber Females in Most Job Roles \n Delta is not statiscally significant") + xlab("") + ylab("% Employees") + geom_hline(data=noattrit, aes(yintercept = .50), colour="black") 
+```
+
+
+
+
+```{r}
+ggplot(data=noattrit,aes(x= JobRole,y=MonthlyIncome,group=JobRole)) + geom_boxplot() + coord_flip() + ggtitle("Managers and Directors Have Higher Compensation \n p-value < .00001") + xlab("")+ylab("Monthly Income")
+
+```
+
+
+```{r}
+ ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$JobLevel,dnn=list("JobRole","JobLevel"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = JobLevel)) + geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Managers & Directors Tend to Have Higher Job Levels") + xlab("") + ylab("")
+ggplot(data=noattrit,aes(x= JobRole,y=JobLevel)) + geom_boxplot() + coord_flip() + ggtitle("JobLevel by Job Role") + xlab("")+ylab("")
+
+results <- lm(noattrit$JRCode~noattrit$JobLevel)
+summary(results)
+
+```
+
+######Observations:
+###### 1. Managers and Directors have higher Job Levels.
+###### 2. Sales Reps and Research Scientists have the lowest Job Levels.
+
+
+```{r}
+ggplot(data=as.data.frame(table(attrit$JobRole,attrit$JobInvolvement,dnn=list("JobRole","JobInvolvement"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = JobInvolvement)) +
+geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle(" HR Managers are the only Role \nwithout Low Job Involvement") + xlab("") + ylab("") 
+```
+
+
+```{r}
+ggplot(data=noattrit,aes(x= JobRole,y=noattrit$NumCompaniesWorked)) +
+geom_boxplot() + coord_flip() + ggtitle("Many Employees have Experience at Several Companies") + xlab("")+ylab("") 
+```
+
+#####Observations:
+##### Sales Rep is the only Job Role which has no employees with NumWorked = 9!!
+
+
+```{r}
+ggplot(data=noattrit,aes(x= JobRole,y=noattrit$YearsAtCompany)) + geom_boxplot() + coord_flip() + ggtitle("Years at Company by Job Role") + xlab("")+ylab("") 
+  ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$YearsAtCompany,dnn=list("JobRole","YearsAtCompany"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = YearsAtCompany)) + geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Significant Differences between Tenure by Job Role \np-value=.0008") + xlab("") + ylab("")
+  
+results <- lm(noattrit$JRCode~noattrit$YearsAtCompany)
+summary(results)
+  
+```
+
+#####Observations
+##### The Job Role "Sales Reps" has the lowest average duration at the company.
+##### The Job Roles of Managers have the longest average duration at the company.
+
+
+```{r}
+ ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$YearsWithCurrManager,dnn=list("JobRole","YearsWithCurrManager"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = YearsWithCurrManager)) + geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Years with Current Manager by Job Role") + xlab("") + ylab("# Employees")
+ggplot(data=noattrit,aes(x= JobRole,y=YearsWithCurrManager)) + geom_boxplot() + coord_flip() + ggtitle("Years With Curr Manager Vary By Job Role \n p-value = .0425") + xlab("")+ylab("Years")
+```
+
+#####Observations:
+##### Sales Reps change managers most frequently, while directors and managers tend to stay with the same manager for a longer time.
+
+
+#####Education Level 
+##### Though not identified as a first order differentiator by linear regression, Education is an interesting parameter in regards to Job Role
+
+```{r}
+ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$Education,dnn=list("JobRole","Education"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = Education)) +
+geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Education by Job Role \nNo PhD Sales Reps nor HR Managers \nAll HR Managers Have Some College") + xlab("") + ylab("% Employees")
+```
+
+
+#####Observations:
+##### No PhD Sales Reps nor HR Managersn
+##### All HR Managers Have Some College (unique from all other job roles)"
+##### Sales Reps have the highest percentage of employees with college-level education (25%)
+
+
+### Company Specifics
+
+
+#####Key Findings
+##### 67% of the Employees in the Company in R&D
+##### The average age of employees in 37.56 years, with the employees in HR average age being slightly higher.
+##### There are 46% more Male employees than Female employees.  HR has the largest ratio of Males to Female at 2.6:1
+##### Job Level is strongly correlated to Montly Income. High Job Level = Higher Monthly Incomes.
+##### Human Resource Managers are the only Role which does not have 'Low' level of job involvement
+##### 50% of Employees have been with the company <= 5 years
+##### People with Marketing education only work in Sales, and people with HR education only work in HR.  All departments have a mix of Educational Backgrounds.
+##### Everyone receives a Performance Rating of Excellent or Outstanding.
+##### Work Experience correlates to Job Level and therefore Monthly Income
+##### Monthly Income is based on Work Experience, not Performance. (Job Level is correlated to Total Time Worked and Time At Company. Monthly Income is correlated to Job Level and Total Time Worked.  All Performance Ratings are Excellent and Outstanding.)
+##### The longer you work for a manager the longer the time between promotions.
+
+
+
+#####Departments
+```{r}
+
+DepartmentDF <- as.data.frame(table(noattrit$Department))
+colnames(DepartmentDF) <- c("Department","DepartmentCount")
+
+DepartmentDF$CoDepartmntPercentage <-paste(100*as.numeric(format(DepartmentDF$DepartmentCount/colSums(DepartmentDF[2]),digits=1)),"%")
+DepartmentDF$CoDepartmntPercentage <-paste(100*as.numeric(format(DepartmentDF$DepartmentCount/colSums(DepartmentDF[2]),digits=1)),"%")
+
+ print.data.frame(DepartmentDF[with(DepartmentDF, order(-DepartmentCount)),],row.names=FALSE)
+ 
+ggplot(data=as.data.frame(table(noattrit$Department,dnn=list("Department"))), aes(x= reorder(Department,Freq),y=Freq)) +
+geom_bar(stat="identity") + coord_flip() + ggtitle("Department Sizes \nno attrition") + xlab("") + ylab("")
+```
+
+#####Age Distribution
+
+```{r}
+options(width = 150)
+ggplot(data=noattrit, aes(x=noattrit$Age,fill=noattrit$Department)) + geom_histogram()
+cat("Summary of Age Distribution for the Company")
+summary(noattrit$Age)
+cat("Summary of Age Distributions by Department")
+aggdata <-aggregate(noattrit$Age, by=list(noattrit$Department), 
+FUN=summary, na.rm=TRUE)
+print(aggdata)
+
+```
+##### Gender Distribution by Department
+```{r}
+ggplot(data=as.data.frame(table(noattrit$Department,noattrit$Gender,dnn=list("Department","Gender"))), aes(x= reorder(Department,Freq),y=Freq, fill = Gender)) + geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Gender by Department") + xlab("") + ylab("% Employees") + geom_hline(data=noattrit, aes(yintercept = .50), colour="black") 
+ggplot(data=noattrit, aes(x=noattrit$Gender,fill=Gender)) + geom_bar() + ggtitle("There are 46% more Males than Females in the Company \np-value=.04") + xlab("Gender")
+
+#Recode Department to a numeric for t-test analysis
+noattrit$DeptCode[noattrit$Department=="Research & Development"] <- 1L
+noattrit$DeptCode[noattrit$Department=="Sales"] <- 2L
+noattrit$DeptCode[noattrit$Department=="Human Resources"] <- 3L
+t.test(table(noattrit$DeptCode, noattrit$Gender))
+ 
+
+```
+
+```{r}
+ggplot(data=noattrit,aes(x=noattrit$JobLevel, y=noattrit$MonthlyIncome)) + geom_point()  + ggtitle("Monthly Income is correlated to Job Level \n(p-value=<.0001") + ylab("Monthly Income") +xlab("Job Level") + geom_smooth(method = 'lm', se = FALSE)
+results <- lm(noattrit$MonthlyIncome~noattrit$JobLevel)
+summary(results)
+
+```
+#####Job Involvement
+```{r}
+ ggplot(data=as.data.frame(table(noattrit$Department,noattrit$JobInvolvement,dnn=list("Department","JobInvolvement"))), aes(x= reorder(Department,Freq),y=Freq, fill = JobInvolvement)) + geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("4.4% of the Company has a Low Level of Job Involvement") + xlab("") + ylab("") + geom_hline(data=noattrit, aes(yintercept = .9554), colour="black")
+
+t.test(table(noattrit$DeptCode, noattrit$JobInvolvement))
+```
+
+#### Number of Years with Current Manager
+
+
+```{r}
+ggplot(data=noattrit, aes(x=factor(noattrit$YearsWithCurrManager))) + geom_histogram(stat="count",position = "dodge") +xlab("Years") + scale_x_discrete(name='Years With Current Manager') + ggtitle("Years With Current Manager")
+```
+
+#####Observations:
+#####Multiple Modal Distribution
+
+##### Education
+
+```{r}
+cat("Percentage of Employees with No College-Level Education:",paste(100*as.numeric(format(nrow(as.data.frame(noattrit[( noattrit$Education == 1),]))/1233,digits=1)),"%"))
+
+ggplot(data=noattrit, aes(x=factor(noattrit$Education))) + geom_histogram(stat="count",position = "dodge") +xlab(" ") + scale_x_discrete(name='Education') + ggtitle("Education Level")
+```
+
+
+
+#### Compensation is based on Work Experience not Performance
+
+##### Job Level vs Total Working Years
+```{r}
+ggplot(data=noattrit,aes(x= JobLevel,y=noattrit$TotalWorkingYears, group=JobLevel)) + geom_boxplot() + coord_flip() + ggtitle("Work Experience Correlates to Job Level") + xlab("Job Level")+ylab("Years")
+
+```
+#####Working Years vs Monthly Income
+```{r }
+ggplot(data=noattrit,aes(x=noattrit$TotalWorkingYears,
+y=noattrit$MonthlyIncome,col=factor(noattrit$JobLevel))) +
+geom_point()  + ggtitle("Total Working Years is Correlated to Job Level \np-value <.00001") + xlab("")+ylab("")
+
+results <- lm(noattrit$JobLevel~noattrit$TotalWorkingYears)
+summary(results)
+
+ 
+```
+
+#### Total Time At Company vs Monthly Income
+
+```{r}
+ggplot(data=noattrit,aes(x=noattrit$YearsAtCompany, y=noattrit$MonthlyIncome,col=factor(noattrit$JobLevel))) +
+geom_point()  + ggtitle("Years At Company vs Monthly Income by JobLevel") + xlab("")+ylab("")
+
+ results <- lm(noattrit$MonthlyIncome ~ noattrit$JobLevel + noattrit$TotalWorkingYears + noattrit$YearsAtCompany)
+ summary(results)
+
+```
+
+
+##### Performance Rating
+```{r}
+ggplot(data=noattrit, aes(x=factor(noattrit$PerformanceRating))) + geom_histogram(stat="count",position = "dodge") +xlab(" ") + scale_x_discrete(name='Education') + ggtitle("Everyone Receives a Performance Rating of Excellent or Outstanding")
+
+ggplot(data=noattrit,aes(x= PerformanceRating, y=noattrit$MonthlyIncome, group=PerformanceRating)) + geom_boxplot() + ggtitle("Monthly Income by Performance Rating") + xlab("Performance Rating")+ylab("Monthly Income")
+```
+
+##### Years Since Promotion
+```{r}
+ggplot(data=noattrit,aes(x=noattrit$YearsWithCurrManager, y=noattrit$YearsSinceLastPromotion)) +
+geom_point()  + ggtitle("The Longer You Stay with a Manager the Longer Time Between Promotions") + xlab("Years With Current Manager")+ylab("Years Since Last Promotion") + stat_smooth(method="lm", se=FALSE)
+results <- lm(noattrit$YearsSinceLastPromotion ~ noattrit$YearsWithCurrManager)
+summary(results)
+
+ggplot(data=noattrit,aes(x= JobLevel,y=noattrit$YearsSinceLastPromotion, group=JobLevel)) + geom_boxplot() + coord_flip() + ggtitle("Time Since Last Promotion Increases as Job Level Increases") + xlab("Job Level")+ylab("Years")
+
+```
+
+####Percent Salary Hike
+
+```{r}
+
+ggplot(data=noattrit,aes(x= JobLevel,y=noattrit$PercentSalaryHike, group=JobLevel)) + geom_boxplot() + coord_flip() + ggtitle("All Job Levels Received About 15% Average Salary Increase \nwith roughly similar distributions") + xlab("Job Level")+ylab("% Salary Increase")
+
+```
+
+
+
+
+### Job Satisfaction
+
+#####Key Findings
+#####1. Job Satisfaction decreaseas as Hourly rate 
+#####2. PhDs have the highest satisfaction
+#####3. People with Bachelor Degrees are the most dissatified
+#####4. Satisfaction in consistent by Gender
+#####5. Satisfaction varies by Job Role with R&D Manager having the lowest satisfaction and Sales Reps and HR Managers having the highest
+
+##### Hourly Rate
+##### Suggested by Linear Regression Modeling (See Experimentation Tab) as weak factor for Job Satisfaction (other potential factors were identified but did not pass on review)
+
+```{r}
+ggplot(data=noattrit,aes(x= JobSatisfaction,y=noattrit$HourlyRate, group=JobSatisfaction)) + geom_boxplot() + coord_flip() + ggtitle("Job Satisfaction Decreases as Hourly Rate Decreases \np-value=.05") + xlab("Job Satisfaction")+ylab("Hourly Rate")
+
+```
+
+#### Visual inspection of the Top 10 common demographics suggests exploring Department, Education Field, Gender and Job Role as factors related to Job Satisfaction
+
+```{r}
+#recode JobSatisfaction for analysis
+noattrit$JSCode[noattrit$JobSatisfaction==1] <- "Low"
+noattrit$JSCode[noattrit$JobSatisfaction==2 |noattrit$JobSatisfaction==3 | noattrit$JobSatisfaction==4] <- "High"
+noattrit$JSCodeNum[noattrit$JobSatisfaction==2 |noattrit$JobSatisfaction==3 | noattrit$JobSatisfaction==4] <- 2L
+noattrit$JSCodeNum[noattrit$JobSatisfaction==1] <- 1L
+
+```
+
+#### Education
+```{r}
+ggplot(data=as.data.frame(table(noattrit$Education,noattrit$JobSatisfaction,dnn=list("Education","JobSatisfaction"))), aes(x=Education,y=Freq, fill = JobSatisfaction)) + geom_bar(stat="identity",position="fill") + ggtitle("PhDs Have the Highest Job Satisfaction \n People with Bachelor Degrees Have the Lowest Job Satisfaction \np-value=.01263") + xlab("Education Level") + ylab("") + geom_abline(slope=0, intercept=0.5,  col = "black",lty=2) + coord_flip()
+
+ggplot(data=as.data.frame(table(noattrit$Education,noattrit$JSCode,dnn=list("Education","JobSatisfaction"))), aes(x=Education,y=Freq, fill = JobSatisfaction)) + geom_bar(stat="identity",position="fill") + ggtitle("Job Satisfaction is Varies by Education") + xlab("") + ylab("") + geom_abline(slope=0, intercept=0.9,  col = "black",lty=2) + coord_flip()
+
+t.test(table(noattrit$JSCodeNum, noattrit$Education))
+```
+
+
+
+#### Gender
+```{r}
+ggplot(data=as.data.frame(table(noattrit$Gender,noattrit$JobSatisfaction,dnn=list("Gender","JobSatisfaction"))), aes(x=Gender,y=Freq, fill = JobSatisfaction)) +
+geom_bar(stat="identity",position="fill") + ggtitle("Job Satisfaction is Consistent Across Genders") + xlab("") + ylab("") + geom_abline(slope=0, intercept=0.5,  col = "black",lty=2)
+```
+
+
+#### Job Role
+
+```{r}
+ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$JobSatisfaction,dnn=list("JobRole","JobSatisfaction"))), aes(x=JobRole,y=Freq, fill = JobSatisfaction)) + geom_bar(stat="identity",position="fill") + ggtitle("Job Satisfaction is Varies by Job Roles \nTop Dissatisfied Roles:R&D Director  \nMost Satsifed: Sales Reps and HR Manager") + xlab("") + ylab("") + geom_abline(slope=0, intercept=0.9,  col = "black",lty=2) + coord_flip()
+
+t.test(table(noattrit$JSCodeNum, noattrit$JobRole))
+```
+
+
+### Interesting Findings
+
+
+#####Key Findings:
+
+##### NumCompaniesWorked has evidence of ambiguity in the data and is perhaps miscoded or inaccurate.  (See discussion below).
+##### No relationship between the difference compensation rates.  Would have expected a multiplicative relationship between DailyRate and Hourly Rate, or Daily Rate and Monthly Rate, etc.
+
+
+
+
+#####Observaton:
+##### Strong Correlation between observation incoming order and employee number
+
+
+##### Number of Companies Worked
+```{r}
+summary(noattrit$NumCompaniesWorked)
+
+ggplot(data=noattrit, aes(x=factor(noattrit$NumCompaniesWorked))) + geom_histogram(stat="count",position = "dodge") +xlab("Number CompaniesWorked") + scale_x_discrete(name='Number of Companies') +ggtitle("Number of Companies Worked")
+```
+
+##### Observations:
+##### There maybe confusion in the coding of this variable.  What does 0 mean?  Since these are employees at this company everyone has worked at least one company.  Or maybe the variable is to be interpreted as the number of companies worked other than this one.  Seems unlikely as the most frequent value are
+
+
+#### Compensation Rates - No correlations
+
+##### Monthly Income vs Monthly Rate
+
+```{r}
+ggplot(data=noattrit,aes(x=noattrit$MonthlyRate, y=noattrit$MonthlyIncome)) +
+geom_point()  + ggtitle(" No Correlation between Monthly Income vs Monthly Rate \n p-value=.261") + xlab("Monthly Rate")+ylab("Monthly Income") + stat_smooth(method="lm", se=FALSE)
+
+result <- lm(noattrit$MonthlyIncome ~ noattrit$MonthlyRate)
+summary(result)
+
+ggplot(data=noattrit,aes(x=noattrit$DailyRate, y=noattrit$MonthlyIncome)) +
+geom_point()  + ggtitle(" No Correlation between Monthly Income vs Daily Rate") + xlab("Daily Rate")+ylab("Monthly Income") + stat_smooth(method="lm", se=FALSE)
+
+ggplot(data=noattrit,aes(x=noattrit$DailyRate, y=noattrit$MonthlyRate)) +
+geom_point()  + ggtitle(" No Correlation between Monthly Rate & Daily Rate") + xlab("Daily Rate")+ylab("Monthly Rate") + stat_smooth(method="lm", se=FALSE)
+
+ggplot(data=noattrit,aes(x=noattrit$HourlyRate, y=noattrit$DailyRate)) +
+geom_point()  + ggtitle(" No Correlation between Hourly Rate & Daily Rate") + xlab("Hourly Rate")+ylab("Daily Rate") + stat_smooth(method="lm", se=FALSE)
+
+```
+```{r}
+ggplot(data=noattrit,aes(x=noattrit$YearsAtCompany, y=noattrit$DailyRate,col=factor(noattrit$JobLevel))) +
+geom_point()  + ggtitle("Daily Rate vs Years At Company by JobLevel") + xlab("Years")+ylab("Daily Rate")
+```
+
+#### The strong correlations found between TimeAtCompany & Total Working Time with Monthly Income are not evident with DailyRate, Hourly Rate nor Monthly Rate.
+#### Attempted to determine relationships using log-log, linear-log, log-linear transformations and multiplicative models. 
+
+
+
+
+
+### Experimentation
+1.Employee Number - a recoded start date?....No
+2.Linear Regression Modeling to id first order variables to differentiate factor variables
+
+
+#####Employee Number is strongly correlated to the index number of the incoming data.  Perhaps the employee number is a time ordered variable related to employee start date?
+
+```{r}
+
+ggplot(data=noattrit,aes(x=as.integer(rownames(noattrit)), y=noattrit$EmployeeNumber)) +
+geom_point() + ggtitle("Index Number vs Employee Number") + ylab("Employee Number")+ xlab("index number")
+
+ggplot(data=noattrit,aes(x=noattrit$EmployeeNumber, y=noattrit$YearsAtCompany)) +
+geom_point()  + ggtitle("Years At Company vs Employee \nEmployee Number is not related to start date") + xlab("Employee Number")+ylab("Years")
+```
+
+#### Used Linear Regression Modeling to determine variables of significance between Job Roles
+#### Important first order terms in the model are: EducationField,Age,JobLevel,MonthlyIncome, Gender, JobInvolvement,NumCompaniesWorked,YearsAtCompany,YearsWithCurrManager
+```{r }
+
+options(width = 150)
+
+#Run a linear regression model using all variables to id the important first order terms
+jr.lm <- lm(noattrit$JRCode ~ noattrit$BusinessTravel+ noattrit$EducationField+ noattrit$Gender+ noattrit$OverTime+ noattrit$MaritalStatus+ noattrit$Age+ noattrit$DailyRate+ 
+noattrit$DistanceFromHome+ noattrit$Education+ noattrit$EmployeeNumber+noattrit$EnvironmentSatisfaction+ noattrit$HourlyRate+ noattrit$JobInvolvement+ noattrit$JobLevel+ noattrit$JobSatisfaction+
+ noattrit$MonthlyIncome+ noattrit$MonthlyRate+ noattrit$NumCompaniesWorked+ noattrit$PercentSalaryHike+ noattrit$PerformanceRating+ noattrit$RelationshipSatisfaction+ noattrit$StockOptionLevel+ 
+noattrit$TotalWorkingYears+ noattrit$TrainingTimesLastYear+ noattrit$WorkLifeBalance+ noattrit$YearsAtCompany+ noattrit$YearsInCurrentRole+ noattrit$YearsSinceLastPromotion+ noattrit$YearsWithCurrManager)
+summary(jr.lm)
+
+#Check revised model fit
+jr.lm <- lm(noattrit$JRCode ~noattrit$EducationField+ noattrit$Age + noattrit$JobLevel+ noattrit$MonthlyIncome+ noattrit$Gender+ noattrit$JobInvolvement+ noattrit$NumCompaniesWorked+ noattrit$YearsAtCompany+ noattrit$YearsWithCurrManager)
+summary(jr.lm)
+
+```
+#### The fit is not great, but perhaps sufficient enough to identify the important fit order terms to explore Job Roles
+
+#####Linear Regression Modeling for Job Satisfaction first order factors
+```{r}
+js.lm <- lm(noattrit$JobSatisfaction ~ noattrit$BusinessTravel+ noattrit$EducationField+ noattrit$Gender+ noattrit$OverTime+ noattrit$MaritalStatus+ noattrit$Age+ noattrit$DailyRate+ noattrit$DistanceFromHome+ noattrit$Education+ noattrit$EmployeeNumber+ noattrit$EnvironmentSatisfaction+ noattrit$HourlyRate+ noattrit$JobInvolvement+ noattrit$JobLevel+ noattrit$JobRole+ noattrit$MonthlyIncome+ noattrit$MonthlyRate+ noattrit$NumCompaniesWorked+ noattrit$PercentSalaryHike+ noattrit$PerformanceRating+ noattrit$RelationshipSatisfaction+ noattrit$StockOptionLevel+ noattrit$TotalWorkingYears+ noattrit$TrainingTimesLastYear+ noattrit$WorkLifeBalance+ noattrit$YearsAtCompany+ noattrit$YearsInCurrentRole+ noattrit$YearsSinceLastPromotion+ noattrit$YearsWithCurrManager)
+summary(js.lm)
+
+
+js.lm <- lm(noattrit$JobSatisfaction ~noattrit$OverTime+noattrit$MaritalStatus+noattrit$HourlyRate + noattrit$RelationshipSatisfaction)
+
+summary(js.lm)
+
+#####Note:  The fit is poor, but may provide directionality as to first order factors to assess.
+```
+
+##### Linear Regression Modeling suggests that Overtime, Marital Status, Hourly Rate, and Relationship Satisfaction may be factors related to Job Satisfaction.  This method didn't work as well as with understanding of Job Roles.  Only one of the four variables has a good correlation to Job Satisfaction, Hourly Rate.
+
+
+######Overtime
+```{r}
+
+ggplot(data=as.data.frame(table(attrit$JobSatisfaction,attrit$OverTime,dnn=list("JobSatisfaction","OverTime"))), aes(x= reorder(JobSatisfaction,Freq),y=Freq, fill = OverTime)) +
+geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("% of People Who Have Over Time is Consistent for All Job Satisfation Levels") + xlab("") + ylab("") + geom_abline(slope=0, intercept=0.5,  col = "black",lty=2)
+
+```
+
+##### Marital Status
+```{r}
+ggplot(data=as.data.frame(table(attrit$JobSatisfaction,attrit$MaritalStatus,dnn=list("JobSatisfaction","MaritalStatus"))), aes(x= reorder(JobSatisfaction,Freq),y=Freq, fill = MaritalStatus)) +
+geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Job Satisfaction by Marital Status is Consistent") + xlab("") + ylab("") + geom_abline(slope=0, intercept=0.5,  col = "black",lty=2)
+
+```
+
+##### Relationship Satisfaction
+```{r}
+ggplot(data=as.data.frame(table(attrit$JobSatisfaction,attrit$RelationshipSatisfaction,dnn=list("JobSatisfaction","RelationshipSatisfaction"))), aes(x= reorder(JobSatisfaction,Freq),y=Freq, fill = factor(RelationshipSatisfaction))) +
+geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Job Satisfaction by Relationship Satisfaction is Consistent") + xlab("") + ylab("") + geom_abline(slope=0, intercept=0.5,  col = "black",lty=2)
+
+```
+
+##### Find common demographics for people with high/lo job satisfaction
+```{r}
+JS.4 <- noattrit[noattrit$JobSatisfaction==4,]
+JS.3 <- noattrit[noattrit$JobSatisfaction==3,]
+highjs <- rbind(JS.3, JS.4)
+demohighjs<- highjs[1:8]
+demohighjs$Attrition <- NULL
+demohighjs$BusinessTravel <- NULL
+demohighjs$OverTime <- NULL
+demohighjs$MaritalStatus <- NULL
+countdemohighjs<- count(demohighjs)
+head(countdemohighjs[order(countdemohighjs$freq,decreasing = TRUE),],10)
+
+```
+#### Visual inspection of the Top 10 common demographics suggests exoloring Department, Education Field, Gender and Job Role as factors related to Job Satisfaction
+
+==
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
