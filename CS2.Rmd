@@ -1,5 +1,4 @@
 ---
-
 output: html_document
 ---
 
@@ -8,16 +7,16 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 require("ggplot2")
 require ("plyr")
-
 ```
-## Employment Data Analysis {.tabset .tabset-fade}
 
-The secrets to getting ahead in this company:
-1.Work for many years with several different companies before coming to this company. Your Total Time Worked will provide you with a higher job level and higher monthly income.
-2.Change Managers frequently.  The longer you stay with a manager the longer the time before you will receive you next promotion. 
-3.Aspire and work toward being a manager or director.  These job roles make more money. If you stay with the company long enough and have many years of total work time before coming to the company, you should be able to obtain one of these position.
-4.Do not work as a Sales Representative.  This job role makes less money.
-5. Don't worry about job performance ratings.  Everyone receives either an outstanding or an excellent rating.  The ratings have not impact on your monthly income.
+## <font color="midnightblue">Employment Data Analysis</font> {.tabset .tabset-fade}
+
+**The secrets to getting ahead in this company:**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.Work for many years with several different companies before coming to this company. Your Total Time Worked will provide you with a higher job level and higher monthly income.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.Change Managers frequently.  The longer you stay with a manager the longer the time before you will receive you next promotion.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.Aspire and work toward being a manager or director.  These job roles make more money. If you stay with the company long enough and have many years of total work time before coming to the company, you should be able to obtain one of these position.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.Do not work as a Sales Representative.  This job role makes less money.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5. Don't worry about job performance ratings.  Everyone receives either an outstanding or an excellent rating.  The ratings have not impact on your monthly income.  
 
 
 
@@ -58,22 +57,22 @@ table(as.data.frame(sapply(attrit,class)))
 
 
 ```
-#### Job Role Pareto 
+#### <font color="midnightblue">Job Role Pareto</font> 
 
-```{r}
+```{r, fig.width=10}
 ggplot(data=as.data.frame(table(attrit$Department,attrit$JobRole,dnn=list("Department","JobRole"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = Department)) +
-geom_bar(stat="identity") + coord_flip() + ggtitle("Number of Employees per Job Role by Department") + xlab("") + ylab("")
+geom_bar(stat="identity") + coord_flip() + ggtitle("Number of Employees per Job Role by Department") + xlab("") + ylab("")+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4")))
 ```
 
 ##### The Job Role "Manager" is the only Job Role that is in multiple departments
 ##### To aid analysis the values of JobRole for the Managers will be recoded
 
-```{r}
+```{r, fig.width=10}
 # Recode Managers
 attrit$JobRole <-with(attrit, ifelse(attrit$JobRole == "Manager",paste(attrit$Department,attrit$JobRole), as.character(attrit$JobRole)))
 attrit$JobRole <- as.factor(attrit$JobRole)
 ggplot(data=as.data.frame(table(attrit$Department,attrit$JobRole,dnn=list("Department","JobRole"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = Department)) +
-geom_bar(stat="identity") + coord_flip() + ggtitle("Number of Employees per Job Role by Department \nafter recoding") + xlab("") + ylab("")
+geom_bar(stat="identity") + coord_flip() + ggtitle("Number of Employees per Job Role by Department \nafter recoding") + xlab("") + ylab("")+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4")))
 
 #Recode the variable "JobRole" to a numeric value for modeling
 attrit$JRCode[attrit$JobRole=="Healthcare Representative"] <- 1L
@@ -102,116 +101,128 @@ noattrit$Attrit <- NULL
 tab content 2
 
 ### Job Roles
-#### Note: All analysis has been performed on employees only (No attrition participants
+
+####<font color="midnightblue">Job Roles</font>  
+*Note: All analysis has been performed on employees only (No attrition participants)*
 
 ####Key Findings
 
-##### 1) Manager Job Role:
-#####   a) only job role that exists in all departments.  All other job roles are unique to a department.
-#####   b) have the longest average duration at the company.
-##### 2) Managers and Directors
-#####   a) tend to be older than people in other job roles.
-#####   b) have higher Job Levels.
-#####   c) have  higher Monthly Income
-##### 3) Manufacturing Director
-#####   a) the only Job Role where Males do not outnumber Females.
-##### 4) Human Resource Manager
-#####   a) is the only Role which does not have 'Low' level of job involvement
-#####   b) No PhDs (characteristic in common with Sale Reps)
-#####   c) All HR Managers have some College level education (a characteristic unique to this Job Role)
-##### 5) Sales Reps and Reseach Scientists
-#####   a) have the lowest Job Levels.
-##### 6) Sales Reps
-#####   a) is the only Job Role which has no employees with NumWorked = 9!!
-#####  b) have the lowest average duration at the company.
-#####  c) change managers most frequently, while directors and managers tend to stay with the same manager for a longer time.
-#####  d) No PhDs (characteristic in common with HR Managers)
-#####  e) the highest percentage of employees with college-level education (25%)
+**1) Manager Job Role:**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a) Only job role that exists in all departments.  All other job roles are unique to a department.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b) Have the longest average duration at the company  
+**2) Managers and Directors**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a) Tend to be older than people in other job roles  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b) Have higher Job Levels  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c) Have  higher Monthly Income  
+**3) Manufacturing Director**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a) The only Job Role where Males do not outnumber Females  
+**4) Human Resource Manager**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a) is the only Role which does not have 'Low' level of job involvement  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b) No PhDs (characteristic in common with Sale Reps)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c) All HR Managers have some College level education (a characteristic unique to this Job Role)  
+**5) Sales Reps and Reseach Scientists**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a) have the lowest Job Levels  
+**6) Sales Reps**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a) is the only Job Role which has no employees with NumWorked = 9!!  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b) have the lowest average duration at the company  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c) change managers most frequently, while directors and managers tend to stay with the same manager for a longer time  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;d) No PhDs (characteristic in common with HR Managers)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e) the highest percentage of employees with college-level education (25%)  
 
 
-
-```{r}
+####<font color="midnightblue">Departments</font>  
+```{r, fig.width=10}
 
 ggplot(data=as.data.frame(table(noattrit$Department,noattrit$JobRole,dnn=list("Department","JobRole"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = Department)) +
-geom_bar(stat="identity") + coord_flip() + ggtitle("Number of Employees per Job Role by Department") + xlab("") + ylab("")
+geom_bar(stat="identity") + coord_flip() + ggtitle("Number of Employees per Job Role by Department") + xlab("") + ylab("")+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4")))
 ```
 
-#### Linear Regression Modeling (See Experiment Tab) suggests Education Field, Age, Job Involvement, Gender, Job Level, Monthly Income, Number of Companies Worked, Years At Company and Years with Current Manager are different between of Job Roles
+**Linear Regression Modeling (See Experiment Tab) suggests Education Field, Age, Job Involvement, Gender, Job Level, Monthly Income, Number of Companies Worked, Years At Company and Years with Current Manager are different between of Job Roles**  
 
-```{r}
+####<font color="midnightblue">Education</font>
+
+```{r, fig.width=10}
 ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$EducationField,dnn=list("JobRole","EducationField"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = EducationField)) +
-geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("# of Employees per Job Role by EducationField") + xlab("") + ylab("# of Employees")
+geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Percent of Employees per Job Role by Education Field") + xlab("") + ylab("Percent of Employees")+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4", "midnightblue", "mistyrose4", "lightcyan3")))
+```
+
+*Though not identified as a first order differentiator by linear regression, Education is an interesting parameter in regards to Job Role*  
+
+```{r, fig.width=10}
+ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$Education,dnn=list("JobRole","Education"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = Education)) +
+geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Education by Job Role \nNo PhD Sales Reps nor HR Managers \nAll HR Managers Have Some College") + xlab("") + ylab("% Employees")+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4", "mistyrose4", "lightcyan3")))
 ```
 
 ##### Observations
-##### 1.All Departments have a mix of educational fields
-##### 2.People with Education in Marketing only work in the Sales Department
-##### 3.People with Education in Human Resources work in the Human Resources Department
-##### 4.R&D is predominantly composed of people with Life Sciences and Medical Education 
+**All Departments have a mix of educational fields**  
+**People with Education in Marketing only work in the Sales Department**  
+**People with Education in Human Resources work in the Human Resources Department**  
+**R&D is predominantly composed of people with Life Sciences and Medical Education**  
+**No PhD Sales Reps nor HR Managers**  
+**All HR Managers Have Some College (unique from all other job roles)"**  
+**Sales Reps have the highest percentage of employees with college-level education (25%)** 
 
-
-```{r}
+####<font color="midnightblue">Age</font>  
+```{r, fig.width=10}
 noattrit$JobRole <-with(noattrit, ifelse(noattrit$JobRole=="Manager", paste(noattrit$Department,noattrit$JobRole), as.character(noattrit$JobRole)))
 ggplot(data=noattrit,aes(x= JobRole,y=Age)) +
-geom_boxplot() + coord_flip() + ggtitle("Age by Job Role") + xlab("")+ylab("Age")
- ggplot(data=noattrit, aes(x=noattrit$Age,fill=noattrit$JobRole)) + geom_histogram(position = "dodge",bins=4)
+geom_boxplot() + coord_flip() + ggtitle("Age by Job Role") + xlab("")+ylab("Age")+theme(plot.title=element_text(hjust=0.5))
+#Descripitve Statistics of Employee Ages
   summary(noattrit$Age)
   results <- lm(noattrit$JRCode~noattrit$Age)
 summary(results)
 ```
 
 #####Observations
-#####1. Managers and Directors tend be older than people in other roles
-#####2. The oldest employee is a Sales Executive (60 years old)
-#####3. The youngest employee is a Laboratory Technician (18 years old)
+**1. Managers and Directors tend be older than people in other roles**  
+**2. The oldest employee is a Sales Executive (60 years old)**  
+**3. The youngest employee is a Laboratory Technician (18 years old)**  
 
-
-```{r}
+####<font color="midnightblue">Gender</font>  
+```{r, fig.width=10}
 ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$Gender,dnn=list("JobRole","Gender"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = Gender)) +
-geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Males OutNumber Females in Most Job Roles \n Delta is not statiscally significant") + xlab("") + ylab("% Employees") + geom_hline(data=noattrit, aes(yintercept = .50), colour="black") 
+geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Males OutNumber Females in Most Job Roles \n (Delta is not statiscally significant)") + xlab("") + ylab("Percent of Employees")+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4"))) + geom_hline(data=noattrit, aes(yintercept = .50), colour="black") 
 ```
 
 
 
-
-```{r}
-ggplot(data=noattrit,aes(x= JobRole,y=MonthlyIncome,group=JobRole)) + geom_boxplot() + coord_flip() + ggtitle("Managers and Directors Have Higher Compensation \n p-value < .00001") + xlab("")+ylab("Monthly Income")
+####<font color="midnightblue">Compensation</font>  
+```{r, fig.width=10}
+ggplot(data=noattrit,aes(x= JobRole,y=MonthlyIncome,group=JobRole)) + geom_boxplot() + coord_flip() + ggtitle("Managers and Directors Have Higher Compensation \n (p-value < .00001)") + xlab("")+ylab("Monthly Income")+theme(plot.title=element_text(hjust=0.5))
 
 ```
 
-
-```{r}
- ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$JobLevel,dnn=list("JobRole","JobLevel"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = JobLevel)) + geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Managers & Directors Tend to Have Higher Job Levels") + xlab("") + ylab("")
-ggplot(data=noattrit,aes(x= JobRole,y=JobLevel)) + geom_boxplot() + coord_flip() + ggtitle("JobLevel by Job Role") + xlab("")+ylab("")
+####<font color="midnightblue">Job Levels</font>
+```{r, fig.width=10}
+ ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$JobLevel,dnn=list("JobRole","JobLevel"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = JobLevel)) + geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Managers & Directors Tend to Have Higher Job Levels") + xlab("Percent of Employees") + ylab("")+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4", "mistyrose4", "lightcyan3")))
 
 results <- lm(noattrit$JRCode~noattrit$JobLevel)
 summary(results)
 
 ```
 
-######Observations:
-###### 1. Managers and Directors have higher Job Levels.
-###### 2. Sales Reps and Research Scientists have the lowest Job Levels.
+#####Observations:
+**1. Managers and Directors have higher Job Levels.**  
+**2. Sales Reps and Research Scientists have the lowest Job Levels.**  
 
-
-```{r}
+####<font color="midnightblue">Job Involvement</font>  
+```{r, fig.width=10}
 ggplot(data=as.data.frame(table(attrit$JobRole,attrit$JobInvolvement,dnn=list("JobRole","JobInvolvement"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = JobInvolvement)) +
-geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle(" HR Managers are the only Role \nwithout Low Job Involvement") + xlab("") + ylab("") 
+geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle(" HR Managers are the only Role \nwithout Low Job Involvement") + xlab("Percent of Employees") + ylab("") +theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4", "mistyrose4")))
 ```
 
-
-```{r}
+####<font color="midnightblue">Work Experience</font>  
+```{r, fig.width=10}
 ggplot(data=noattrit,aes(x= JobRole,y=noattrit$NumCompaniesWorked)) +
-geom_boxplot() + coord_flip() + ggtitle("Many Employees have Experience at Several Companies") + xlab("")+ylab("") 
+geom_boxplot() + coord_flip() + ggtitle("Many Employees have Experience at Several Companies") + xlab("Number of Companies")+ylab("") +theme(plot.title=element_text(hjust=0.5))
 ```
 
 #####Observations:
-##### Sales Rep is the only Job Role which has no employees with NumWorked = 9!!
+**Sales Rep is the only Job Role which has no employees with NumWorked = 9!!**  
 
-
-```{r}
-ggplot(data=noattrit,aes(x= JobRole,y=noattrit$YearsAtCompany)) + geom_boxplot() + coord_flip() + ggtitle("Years at Company by Job Role") + xlab("")+ylab("") 
-  ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$YearsAtCompany,dnn=list("JobRole","YearsAtCompany"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = YearsAtCompany)) + geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Significant Differences between Tenure by Job Role \np-value=.0008") + xlab("") + ylab("")
+####<font color="midnightblue">Years at Company</font>  
+```{r, fig.width=10}
+ggplot(data=noattrit,aes(x= JobRole,y=noattrit$YearsAtCompany)) + geom_boxplot() + coord_flip() + ggtitle("Significant Differences between Tenure by Job Role \n(p-value=.0008)") + xlab("Number of Years at Company")+ylab("") +theme(plot.title=element_text(hjust=0.5))
   
 results <- lm(noattrit$JRCode~noattrit$YearsAtCompany)
 summary(results)
@@ -219,32 +230,16 @@ summary(results)
 ```
 
 #####Observations
-##### The Job Role "Sales Reps" has the lowest average duration at the company.
-##### The Job Roles of Managers have the longest average duration at the company.
+**The Job Role "Sales Reps" has the lowest average duration at the company.**  
+**The Job Roles of Managers have the longest average duration at the company.**  
 
 
-```{r}
- ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$YearsWithCurrManager,dnn=list("JobRole","YearsWithCurrManager"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = YearsWithCurrManager)) + geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Years with Current Manager by Job Role") + xlab("") + ylab("# Employees")
-ggplot(data=noattrit,aes(x= JobRole,y=YearsWithCurrManager)) + geom_boxplot() + coord_flip() + ggtitle("Years With Curr Manager Vary By Job Role \n p-value = .0425") + xlab("")+ylab("Years")
+```{r, fig.width=10}
+ggplot(data=noattrit,aes(x= JobRole,y=YearsWithCurrManager)) + geom_boxplot() + coord_flip() + ggtitle("Years With Current Manager Vary By Job Role \n (p-value = .0425)") + xlab("")+ylab("Number of Years")+theme(plot.title=element_text(hjust=0.5))
 ```
 
 #####Observations:
-##### Sales Reps change managers most frequently, while directors and managers tend to stay with the same manager for a longer time.
-
-
-#####Education Level 
-##### Though not identified as a first order differentiator by linear regression, Education is an interesting parameter in regards to Job Role
-
-```{r}
-ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$Education,dnn=list("JobRole","Education"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = Education)) +
-geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Education by Job Role \nNo PhD Sales Reps nor HR Managers \nAll HR Managers Have Some College") + xlab("") + ylab("% Employees")
-```
-
-
-#####Observations:
-##### No PhD Sales Reps nor HR Managersn
-##### All HR Managers Have Some College (unique from all other job roles)"
-##### Sales Reps have the highest percentage of employees with college-level education (25%)
+**Sales Reps change managers most frequently, while directors and managers tend to stay with the same manager for a longer time.**  
 
 
 ### Company Specifics
