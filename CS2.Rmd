@@ -7,6 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 require("ggplot2")
 require ("plyr")
+require ("caTools")
 ```
 
 ## <font color="midnightblue">Employment Data Analysis</font> {.tabset .tabset-fade}
@@ -96,9 +97,179 @@ noattrit$Attrit <- NULL
 
 
 
+#### <font color="midnightblue">Attrition</font> 
 ### Attrition Analysis
+#### First take a quick look at the data. We will name the main dataset used for the attrition portion "attrition" 
 
-tab content 2
+```{r, include=TRUE, echo=TRUE}
+attrition<-read.csv('CaseStudy2reorder.csv', header = T)
+#View(attrition)
+head(attrition)
+```
+
+#### Drop the first Column, attach dataset for ease of variable recall 
+```{r, include=TRUE, echo=TRUE, fig.width=10}
+attrition<-attrition[,-1] # 1st col obsolete 
+str(attrition)
+summary(attrition)
+```
+#### Some of the categorical variables will not work in an analisys because they are not factors. Convert them to factors. 
+
+```{r, include=TRUE, echo=TRUE, fig.width=10}
+attrition$Education<-as.factor(attrition$Education) 
+attrition$EnvironmentSatisfaction<-as.factor(attrition$EnvironmentSatisfaction)  
+attrition$JobInvolvement<-as.factor(attrition$JobInvolvement)  
+attrition$JobLevel<-as.factor(attrition$JobLevel)  
+attrition$JobSatisfaction<-as.factor(attrition$JobSatisfaction)  
+attrition$PerformanceRating<-as.factor(attrition$PerformanceRating)  
+attrition$RelationshipSatisfaction<-as.factor(attrition$RelationshipSatisfaction)  
+attrition$StockOptionLevel<-as.factor(attrition$StockOptionLevel)  
+attrition$WorkLifeBalance<-as.factor(attrition$WorkLifeBalance)  
+```
+####### *(comment: Joblevel description was missing from the original dataset, so we only have the category number).
+
+#### View a Summary of the data 
+```{r, include=TRUE, echo=TRUE, fig.width=10}
+summary(attrition)
+# attach for ease of running code 
+attach(attrition)
+```
+
+#### Some initial things to note here: 
+* Only 16% attrition in the data 
+* BusinessTravel, OverTime, JobInvolvement, PerformanceRating, seem to be unbalanced. All other Variables seem balanced. 
+* YearsAtCompany, YearsInCurrentRole, YearsSinceLastPromotion, YearsWithCurrManager may be skewed
+
+#### Need logistic regression
+
+#### *** The next several steps are the model fitting steps 
+#### Model fitting (Steps 1~zz) 
+
+##### 1. Split the data into train and test data 
+###### We want to be able to create an appropriate model the test that model on a subset of the data. We will create a "training" dataset and a "test" one. 
+```{r, include=TRUE, echo=TRUE, fig.width=10}
+set.seed(123)
+split <- sample.split(attrition$Attrition, SplitRatio = 0.80)
+#get training and test data
+data.train <- subset(attrition, split == TRUE)
+data.test <- subset(attrition, split == FALSE)
+```
+
+##### 2. Define null + full models for the training data
+######  We need a NULL model (with no variables) to compare our training model to. We will compare the Deviance and AIC of the NULL Model vs the training model. We are looking for significant drop in both of these stats as a validation that the model is working. 
+```{r, include=TRUE, echo=TRUE, fig.width=10}
+options(width = 300) ## print 
+null.model.train<-glm(formula=Attrition~1, family = binomial(link="logit"), data=data.train)
+full.model.train<-glm(formula=Attrition~., family = binomial(link="logit"), data=data.train)
+summary(full.model.train)
+```
+
+##### There are a few things to note here:
+* We can see the far-right column with asterisks representing the lowest p-values. Since this is the whole model, and it has not been "fitted," the values here represent individual variables, that, on their own, they each appear to have some significance and explain Attrition.  
+* The "Estimate" column gies us the Log Odds (logit scale). This will back-transformed in a later step to actual Odds-Ratio, which is the probability that a covariate value influences Attrition in terms of Odds.   
+* The Null Deviance (1040.18) is a measure of lack of fit of the model without any variables. 
+* The Residual Deviance (633.03) is a measure of lack of fit of the model with all variables included.  
+* AIC (761.03) is a measure of how well the model is fitting. We want to keep this as low as possible. 
+
+######  Sorting Model by p-value descending to view important covariates
+```{r, include=TRUE, echo=TRUE, fig.width=10}
+#sort summary by p-value descending
+tempDF<-as.data.frame(summary(full.model.train)$coefficients)
+tempDF[order(tempDF$`Pr(>|z|)`),]
+```
+###### We can see the top variables, that, on their own, seem to have an effect in Attrition. 
+
+##### 3. Run ANOVA 
+###### We want to run an ANOVA To further understand the impact of each variable into the model. 
+```{r, include=TRUE, echo=TRUE, fig.width=10}
+anova(full.model.train, test="Chisq")
+```
+###### If we take a look at the Residual Deviance column of ANOVA above, we can get a feel for how much impact a single variable has in the model. The ANOVA calculates the Residual Deviance (lack of fit) that each variable contributes to. Each variable is introduced in order of appearance in dataset (column-wise). For instance, starting from Null model (1040.18), when the first variable, "BusinessTravel" is introduced, there is a drop of Deviance of 18 points. Later variables may contribute more or less to the overall Deviance. The variables that drop the Deviance to the greatest degree, are the ones that may be heavily contributing to Attrition. 
+
+
+##### 4.  Fitting the model using STEP 
+###### We will use STEP as selection procedure (direction="both"), which starts with a NULL model and adding one variable at the time, validating the impact. If the variable is not meaningful it will be discarded. This process is repeated until we go thru all the variables. (Long output ommited, only last few lines shown here for brevity).
+```{r, include=FALSE, echo=FALSE, fig.width=10}
+step(null.model.train, scope=list(upper=full.model.train), direction="both", test="Chisq", data=data.train)
+```
+```{r, include=TRUE, echo=FALSE, fig.width=10}
+cat('step(null.model.train, scope=list(upper=full.model.train), direction="both", test="Chisq", data=data.train)')
+cat("
+. . . 
+< many steps later >
+. . . 
+                           Df Deviance    AIC    LRT  Pr(>Chi)    
+<none>                          653.05 745.05                     
+...
+- DistanceFromHome          1   668.28 758.28 15.224 9.547e-05 ***
+- JobSatisfaction           3   672.87 758.87 19.820 0.0001850 ***
+- JobInvolvement            3   673.25 759.25 20.195 0.0001546 ***
+- NumCompaniesWorked        1   672.21 762.21 19.153 1.207e-05 ***
+- BusinessTravel            2   675.76 763.76 22.705 1.174e-05 ***
+- EnvironmentSatisfaction   3   683.97 769.97 30.921 8.831e-07 ***
+- JobLevel                  4   686.83 770.83 33.779 8.271e-07 ***
+- JobRole                   8   704.21 780.21 51.153 2.452e-08 ***
+- OverTime                  1   743.18 833.18 90.130 < 2.2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+. . .
+Degrees of Freedom: 1175 Total (i.e. Null);  1130 Residual
+Null Deviance:       1040 
+Residual Deviance: 649.2     AIC: 741.2 
+")
+```
+###### The output of the Step procedure above, shows most significant variables (in descending order). We will choose these top 9 (lowest p-value) variables for our Final Training Model. 
+
+##### 5.  Create Final Training Model with top variables (lowest p-value). 
+```{r, include=TRUE, echo=TRUE, fig.width=10}
+final.model.train<-glm(formula=Attrition~OverTime+JobRole+JobLevel+EnvironmentSatisfaction+BusinessTravel+NumCompaniesWorked+JobInvolvement+JobSatisfaction+DistanceFromHome, family = binomial(link="logit"), data=data.train)
+summary(final.model.train)
+```
+
+##### Sort the model by p-value 
+```{r, include=TRUE, echo=TRUE, fig.width=10}
+#sort summary by p-value descending
+tempDF<-as.data.frame(summary(final.model.train)$coefficients)
+tempDF[order(tempDF$`Pr(>|z|)`),]
+```
+
+##### 6.  Test Final Training Model Against Test data 
+###### We are looking for a measure of how accurate this Training Model is against a subset of the data. 
+```{r, include=TRUE, echo=TRUE, fig.width=10}
+predict.results <- predict(final.model.train,newdata=subset(data.test,select=c(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32)),type='response')
+predict.results <- ifelse(predict.results > 0.5,1,0)
+misClasificError <- mean(predict.results)
+print(paste('Accuracy',1-misClasificError))
+```
+###### We see a 91% accuracy of the model against test data, so we are good. 
+
+##### 6. Run Final model against all data. 
+###### Now we ned to run the Final model against all the data. 
+```{r, include=TRUE, echo=TRUE, fig.width=10}
+final.model.alldata<-glm(formula=Attrition~OverTime+JobRole+JobLevel+EnvironmentSatisfaction+BusinessTravel+NumCompaniesWorked+JobInvolvement+JobSatisfaction+DistanceFromHome, family = binomial(link="logit"), data=attrition)
+summary(final.model.alldata)
+```
+
+##### 7. Obtain Odd Ratio of covariences 
+###### The Estimate in the final model is given in terms of Log Odds. Need to invert to obtain actual Odd Ratios of the top variables and sort output
+```{r, include=FALSE, echo=TRUE, fig.width=10}
+sort(exp(final.model.alldata$coefficients[-1]),decreasing=T) 
+```
+###### Looking at the odd ratio table below, we can see that the Sales Representatives category has the highest odds of causing Attrition, this is, Sales representatives are 8 times more likely to have Attrition than any other category. The second highest covariate is Working Overtime. people who work overtime are 5 times more likely to have Atrition. People who travel frequently are 4x more likely to leave. Also Job Roles like Lab technician and HR are more likely to leave, based on the data.   
+
+Covarience/Value	|	Odds Ratio
+--------------------------------	|	----------
+JobRoleSales Representative	|	8.3669402
+OverTimeYes	|	5.3426139
+BusinessTravelTravel_Frequently	|	4.7865786
+JobRoleLaboratory Technician	|	3.6904708
+JobRoleHuman Resources	|	3.4551899
+JobRoleSales Executive	|	3.1500722
+BusinessTravelTravel_Rarely	|	2.2161456
+JobRoleResearch Scientist	|	1.7691884
+JobRoleManager	|	1.5547907
+NumCompaniesWorked	|	1.119052
+DistanceFromHome	|	1.0362319 
 
 ### Job Roles
 
