@@ -25,5 +25,6 @@ This analysis can help DDSAnalytics gain a competitive edge in this industry by 
 1.	Focus time and energy on your Sales Representatives. As this job role was the leading cause of attrition, it would be beneficial to ensure these employees remain satisfied. Things to consider altering about this job role could be the job level the frequent manager changes.  
 2.	Do not grant as many overtime hours – employees are more likely to leave if they work overtime, so limit the number of employees that are working overtime hours.  
 3.	Check in with R&D Directors – this is the most dissatisfied job role in your company.  
+  
 Please see our report for more detailed findings and experimentation. Please contact Noelle Brown, William Gonzalez, or Ann Nelson with any additional questions.  
 
