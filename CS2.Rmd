@@ -3,7 +3,7 @@ output: html_document
 ---
 
 
-```{r setup, include=TRUE, echo=TRUE}
+```{r setup, include=FALSE, echo=TRUE}
 knitr::opts_chunk$set(echo = TRUE)
 require("ggplot2")
 require ("plyr")
@@ -13,20 +13,49 @@ require ("caTools")
 ## <font color="midnightblue">Employment Data Analysis</font> {.tabset .tabset-fade}
 
 **The secrets to getting ahead in this company:**  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.Work for many years with several different companies before coming to this company. Your Total Time Worked will provide you with a higher job level and higher monthly income.  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.Change Managers frequently.  The longer you stay with a manager the longer the time before you will receive you next promotion.  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.Aspire and work toward being a manager or director.  These job roles make more money. If you stay with the company long enough and have many years of total work time before coming to the company, you should be able to obtain one of these position.  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.Do not work as a Sales Representative.  This job role makes less money.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. Work for many years with several different companies before coming to this company. Your Total Time Worked will provide you with a higher job level and higher monthly income.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. Change Managers frequently.  The longer you stay with a manager the longer the time before you will receive you next promotion.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. Aspire and work toward being a manager or director.  These job roles make more money. If you stay with the company long enough and have many years of total work time before coming to the company, you should be able to obtain one of these position.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4. Do not work as a Sales Representative.  This job role makes less money and is most likely to quit.  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5. Don't worry about job performance ratings.  Everyone receives either an outstanding or an excellent rating.  The ratings have not impact on your monthly income.  
 
 
 
+###Executive Summary
+####<font color="midnightblue">Executive Summary</font>
+#####<font color="midnightblue">Introduction</font>
+This project was created for DDSAnalytics, an analytics company that specializes in talent management solutions for Fortune 1000 companies. According to DDSAnalytics, "Talent management is defined as the iterative process of developing and retaining employees. It may include workforce planning, employee training programs, identifying high-potential employees and reducing/preventing voluntary employee turnover (attrition)." DDSAnalytics has hired our team of data scientists to predict employee turnover by analyzing existing employee data. The company can utilize this analysis to predict factors that lead to employee attrition and potentially prevent voluntary employee attrition.  
 
-### DataSet
+#####<font color="midnightblue">Project Goals</font>  
+The main goal of this project is to analyze factors that lead to employee attrition to discover the top most influential factors that lead to attrition.  We are also interested in specifics about the company to help DDSAnalytics better understand its employees. We will analyze interesting trends in job roles at the current company as well as job satisfaction. This knowledge can ultimately help DDSAnalytics remain competitive when hiring employees and creating a positive company culture with satisfied employees.  
 
+#####<font color="midnightblue">Findings</font>  
+**Attrition Analysis:**  
+Overall, we found that the number one cause of employee attrition is being a Sales Representative. Sales Representatives are 8 times more likely to have attrition than any other category. The second highest cause of attrition is working overtime; employees who work overtime are 5 times more likely to quit. Additionally, people who travel frequently are 4 times more likely to voluntarily leave the company. After these top three factors, the next most influential factors that lead to attrition are: being a Laboratory Technician, being in Human Resources, being a Sales Executive, travelling rarely, being a Research Scientist, being a manager, having a high number of companies worked, and living a far distance from the company.  
+**Job Roles:**  
+Since we are also interested in analyzing the current company, we ran the rest of our analysis only with current employees.  We found that the manager is the only job role that overlaps departments and that managers and directors tend to be older and have a higher monthly income than other roles (as expected). The only job role where males do not outnumber females in this company is the Manufacturing Director. The most interesting analysis conducted was on Sales Representatives, since this is the position that is most likely to quit. Sales Representatives have the lowest job levels, the lowest average duration at the company, and change managers the most frequently. All of these factors could contribute to their high turnover rates.  
+**Company Specifics:**  
+Again, we analyzed the company by only including current employees in our analysis. We found that 67% of the company works in Research and Development and that there are 46% more male employees than female employees. We also noticed that job level is strongly correlated to monthly income, which is based on work experience rather than performance. Since everyone in the company receives a performance rating of excellent or outstanding, this holds no weight on income or job satisfaction. Another interesting finding is that the longer employees work for the same manager, there tended to be a longer time there in between promotions. There is a relatively new group of employees at company with 50% of the company working there for less than or equal to 5 years.  
+**Satisfaction:**  
+Generally, job satisfaction decreases as hourly rate decreases, suggesting that hourly rate could be a significant factor leading to satisfaction. Employees with PhD’s, Sales Representatives, and the HR Manager are the most satisfied, which is intriguing given Sales Representatives are the most likely to voluntarily quit. The most dissatisfied employees are the R&D Directors.  
+**Interesting Findings:**  
+There seems to be some discrepancies or errors in the data – we would expect a multiplicative relationship between daily rate and hourly rate or daily rate and monthly rate, but we do not see consistency in this data.  
+**Experimentation:**  
+For our attrition analysis, we ran a logistic regression and fit our model using the STEP procedure as our selection procedure. We ran our model against our test data and came out with 91.8% accuracy in our model, so we sorted the factors that lead to attrition by p-values in descending order of influence. For the remaining analysis on the company, we used linear regression modeling.  
+
+#####<font color="midnightblue">Conclusion</font>
+This analysis can help DDSAnalytics gain a competitive edge in this industry by creating a positive climate and culture and decreasing the attrition rate. With only 16% attrition, DDSAnalytics does not have a very high attrition rate to begin with. Our recommendations to lower this percentage even further are as follows:  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. Focus time and energy on your Sales Representatives. As this job role was the leading cause of attrition, it would be beneficial to ensure these employees remain satisfied. Things to consider altering about this job role could be the job level the frequent manager changes.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. Do not grant as many overtime hours – employees are more likely to leave if they work overtime, so limit the number of employees that are working overtime hours.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. Check in with R&D Directors – this is the most dissatisfied job role in your company.  
+
+Please see our report for more detailed findings and experimentation. Please contact Noelle Brown, William Gonzalez, or Ann Nelson with any additional questions.  
+
+###Data Set
+####<font color="midnightblue">Data Set</font>
 ```{r include=TRUE, echo=FALSE}
 # Read the datafile
-attrit <- read.csv("CaseStudy2-data.csv")
+attrit <- read.csv("Data/CaseStudy2-data.csv")
 # Rearrange the columns to aid analysis
 
 AttritColNames <- c( "Attrition", "BusinessTravel","Department","EducationField","Gender",  "JobRole", "Over18", "OverTime",  "MaritalStatus", "Age", "DailyRate","DistanceFromHome","Education",  "EmployeeCount", "EmployeeNumber", "EnvironmentSatisfaction",  "HourlyRate", "JobInvolvement", "JobLevel","JobSatisfaction","MonthlyIncome", "MonthlyRate", "NumCompaniesWorked",  "PercentSalaryHike", "PerformanceRating", "RelationshipSatisfaction", "StandardHours", "StockOptionLevel", "TotalWorkingYears", "TrainingTimesLastYear","WorkLifeBalance", "YearsAtCompany", "YearsInCurrentRole", "YearsSinceLastPromotion","YearsWithCurrManager")
@@ -58,7 +87,7 @@ table(as.data.frame(sapply(attrit,class)))
 
 
 ```
-#### <font color="midnightblue">Job Role Pareto</font> 
+#### <font color="midnightblue">Job Roles</font> 
 
 ```{r, fig.width=10}
 ggplot(data=as.data.frame(table(attrit$Department,attrit$JobRole,dnn=list("Department","JobRole"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = Department)) +
@@ -97,12 +126,12 @@ noattrit$Attrit <- NULL
 
 
 
-#### <font color="midnightblue">Attrition</font> 
 ### Attrition Analysis
+#### <font color="midnightblue">Attrition</font> 
 #### First take a quick look at the data. We will name the main dataset used for the attrition portion "attrition" 
 
 ```{r, include=TRUE, echo=TRUE}
-attrition<-read.csv('CaseStudy2reorder.csv', header = T)
+attrition<-read.csv('Data/CaseStudy2reorder.csv', header = T)
 #View(attrition)
 head(attrition)
 ```
@@ -321,7 +350,7 @@ geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Percent of E
 
 ```{r, fig.width=10}
 ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$Education,dnn=list("JobRole","Education"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = Education)) +
-geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Education by Job Role \nNo PhD Sales Reps nor HR Managers \nAll HR Managers Have Some College") + xlab("") + ylab("% Employees")+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4", "mistyrose4", "lightcyan3")))
+geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Education by Job Role \nNo PhD Sales Reps nor HR Managers \nAll HR Managers Have Some College") + xlab("") + ylab("Percent of Employees")+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4", "mistyrose4", "lightcyan3")))
 ```
 
 ##### Observations
@@ -365,7 +394,7 @@ ggplot(data=noattrit,aes(x= JobRole,y=MonthlyIncome,group=JobRole)) + geom_boxpl
 
 ####<font color="midnightblue">Job Levels</font>
 ```{r, fig.width=10}
- ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$JobLevel,dnn=list("JobRole","JobLevel"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = JobLevel)) + geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Managers & Directors Tend to Have Higher Job Levels") + xlab("Percent of Employees") + ylab("")+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4", "mistyrose4", "lightcyan3")))
+ ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$JobLevel,dnn=list("JobRole","JobLevel"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = JobLevel)) + geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Managers & Directors Tend to Have Higher Job Levels") + xlab("") + ylab("Percent of Employees")+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4", "mistyrose4", "lightcyan3")))
 
 results <- lm(noattrit$JRCode~noattrit$JobLevel)
 summary(results)
@@ -379,13 +408,13 @@ summary(results)
 ####<font color="midnightblue">Job Involvement</font>  
 ```{r, fig.width=10}
 ggplot(data=as.data.frame(table(attrit$JobRole,attrit$JobInvolvement,dnn=list("JobRole","JobInvolvement"))), aes(x= reorder(JobRole,Freq),y=Freq, fill = JobInvolvement)) +
-geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle(" HR Managers are the only Role \nwithout Low Job Involvement") + xlab("Percent of Employees") + ylab("") +theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4", "mistyrose4")))
+geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle(" HR Managers are the only Role \nwithout Low Job Involvement") + xlab("") + ylab("Percent of Employees") +theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4", "mistyrose4")))
 ```
 
 ####<font color="midnightblue">Work Experience</font>  
 ```{r, fig.width=10}
 ggplot(data=noattrit,aes(x= JobRole,y=noattrit$NumCompaniesWorked)) +
-geom_boxplot() + coord_flip() + ggtitle("Many Employees have Experience at Several Companies") + xlab("Number of Companies")+ylab("") +theme(plot.title=element_text(hjust=0.5))
+geom_boxplot() + coord_flip() + ggtitle("Many Employees have Experience at Several Companies") + xlab("")+ylab("Number of Companies") +theme(plot.title=element_text(hjust=0.5))
 ```
 
 #####Observations:
@@ -393,7 +422,7 @@ geom_boxplot() + coord_flip() + ggtitle("Many Employees have Experience at Sever
 
 ####<font color="midnightblue">Years at Company</font>  
 ```{r, fig.width=10}
-ggplot(data=noattrit,aes(x= JobRole,y=noattrit$YearsAtCompany)) + geom_boxplot() + coord_flip() + ggtitle("Significant Differences between Tenure by Job Role \n(p-value=.0008)") + xlab("Number of Years at Company")+ylab("") +theme(plot.title=element_text(hjust=0.5))
+ggplot(data=noattrit,aes(x= JobRole,y=noattrit$YearsAtCompany)) + geom_boxplot() + coord_flip() + ggtitle("Significant Differences between Tenure by Job Role \n(p-value=.0008)") + xlab("")+ylab("Number of Years at Company") +theme(plot.title=element_text(hjust=0.5))
   
 results <- lm(noattrit$JRCode~noattrit$YearsAtCompany)
 summary(results)
@@ -414,25 +443,25 @@ ggplot(data=noattrit,aes(x= JobRole,y=YearsWithCurrManager)) + geom_boxplot() + 
 
 
 ### Company Specifics
+#### <font color="midnightblue">Company Specifics</font>   
+
+##### <font color="midnightblue">Key Findings</font>
+**67% of the Employees in the Company in R&D**  
+**The average age of employees in 37.56 years, with the employees in HR average age being slightly higher**  
+**There are 46% more Male employees than Female employees.  HR has the largest ratio of Males to Female at 2.6:1**  
+**Job Level is strongly correlated to Montly Income. High Job Level = Higher Monthly Incomes**  
+**Human Resource Managers are the only Role which does not have 'Low' level of job involvement**  
+**50% of Employees have been with the company <= 5 years**  
+**People with Marketing education only work in Sales, and people with HR education only work in HR.  All departments have a mix of Educational Backgrounds**  
+**Everyone receives a Performance Rating of Excellent or Outstanding**  
+**Work Experience correlates to Job Level and therefore Monthly Income**  
+**Monthly Income is based on Work Experience, not Performance. (Job Level is correlated to Total Time Worked and Time At Company. Monthly Income is correlated to Job Level and Total Time Worked.  All Performance Ratings are Excellent and Outstanding.)**  
+**The longer you work for a manager the longer the time between promotions**  
 
 
-#####Key Findings
-##### 67% of the Employees in the Company in R&D
-##### The average age of employees in 37.56 years, with the employees in HR average age being slightly higher.
-##### There are 46% more Male employees than Female employees.  HR has the largest ratio of Males to Female at 2.6:1
-##### Job Level is strongly correlated to Montly Income. High Job Level = Higher Monthly Incomes.
-##### Human Resource Managers are the only Role which does not have 'Low' level of job involvement
-##### 50% of Employees have been with the company <= 5 years
-##### People with Marketing education only work in Sales, and people with HR education only work in HR.  All departments have a mix of Educational Backgrounds.
-##### Everyone receives a Performance Rating of Excellent or Outstanding.
-##### Work Experience correlates to Job Level and therefore Monthly Income
-##### Monthly Income is based on Work Experience, not Performance. (Job Level is correlated to Total Time Worked and Time At Company. Monthly Income is correlated to Job Level and Total Time Worked.  All Performance Ratings are Excellent and Outstanding.)
-##### The longer you work for a manager the longer the time between promotions.
 
-
-
-#####Departments
-```{r}
+##### <font color="midnightblue">Departments</font>  
+```{r, fig.width=10}
 
 DepartmentDF <- as.data.frame(table(noattrit$Department))
 colnames(DepartmentDF) <- c("Department","DepartmentCount")
@@ -443,14 +472,14 @@ DepartmentDF$CoDepartmntPercentage <-paste(100*as.numeric(format(DepartmentDF$De
  print.data.frame(DepartmentDF[with(DepartmentDF, order(-DepartmentCount)),],row.names=FALSE)
  
 ggplot(data=as.data.frame(table(noattrit$Department,dnn=list("Department"))), aes(x= reorder(Department,Freq),y=Freq)) +
-geom_bar(stat="identity") + coord_flip() + ggtitle("Department Sizes \nno attrition") + xlab("") + ylab("")
+geom_bar(stat="identity", fill="steelblue4") + coord_flip() + ggtitle("Department Sizes \n(no attrition)") + xlab("") + ylab("Number of Employees")+theme(plot.title=element_text(hjust=0.5))
 ```
 
-#####Age Distribution
+#####<font color="midnightblue">Age Distribution</font>
 
-```{r}
+```{r, fig.width=10}
 options(width = 150)
-ggplot(data=noattrit, aes(x=noattrit$Age,fill=noattrit$Department)) + geom_histogram()
+ggplot(data=noattrit, aes(x=noattrit$Age,fill=noattrit$Department)) + geom_histogram()+theme(plot.title=element_text(hjust=0.5))+xlab("Age")+ylab("Number of Employees")+ggtitle("Age Distribution by Department")+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4")))
 cat("Summary of Age Distribution for the Company")
 summary(noattrit$Age)
 cat("Summary of Age Distributions by Department")
@@ -459,10 +488,10 @@ FUN=summary, na.rm=TRUE)
 print(aggdata)
 
 ```
-##### Gender Distribution by Department
-```{r}
-ggplot(data=as.data.frame(table(noattrit$Department,noattrit$Gender,dnn=list("Department","Gender"))), aes(x= reorder(Department,Freq),y=Freq, fill = Gender)) + geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Gender by Department") + xlab("") + ylab("% Employees") + geom_hline(data=noattrit, aes(yintercept = .50), colour="black") 
-ggplot(data=noattrit, aes(x=noattrit$Gender,fill=Gender)) + geom_bar() + ggtitle("There are 46% more Males than Females in the Company \np-value=.04") + xlab("Gender")
+#####<font color="midnightblue">Gender Distribution by Department</font>
+```{r, fig.width=10}
+ggplot(data=as.data.frame(table(noattrit$Department,noattrit$Gender,dnn=list("Department","Gender"))), aes(x= reorder(Department,Freq),y=Freq, fill = Gender)) + geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Gender by Department") + xlab("") + ylab("Percent of Employees") + geom_hline(data=noattrit, aes(yintercept = .50), colour="black") +theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4")))
+ggplot(data=noattrit, aes(x=noattrit$Gender,fill=Gender)) + geom_bar() + ggtitle("There are 46% more Males than Females in the Company \n(p-value=.04)") + xlab("Gender")+ylab("Number of Employees")+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4")))
 
 #Recode Department to a numeric for t-test analysis
 noattrit$DeptCode[noattrit$Department=="Research & Development"] <- 1L
@@ -473,51 +502,52 @@ t.test(table(noattrit$DeptCode, noattrit$Gender))
 
 ```
 
-```{r}
-ggplot(data=noattrit,aes(x=noattrit$JobLevel, y=noattrit$MonthlyIncome)) + geom_point()  + ggtitle("Monthly Income is correlated to Job Level \n(p-value=<.0001") + ylab("Monthly Income") +xlab("Job Level") + geom_smooth(method = 'lm', se = FALSE)
+```{r, fig.width=10}
+ggplot(data=noattrit,aes(x=noattrit$JobLevel, y=noattrit$MonthlyIncome)) + geom_point()  + ggtitle("Monthly Income is correlated to Job Level \n(p-value=<.0001)") + ylab("Monthly Income") +xlab("Job Level") + geom_smooth(method = 'lm', se = FALSE, color="midnightblue")+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4")))
 results <- lm(noattrit$MonthlyIncome~noattrit$JobLevel)
 summary(results)
 
 ```
-#####Job Involvement
-```{r}
- ggplot(data=as.data.frame(table(noattrit$Department,noattrit$JobInvolvement,dnn=list("Department","JobInvolvement"))), aes(x= reorder(Department,Freq),y=Freq, fill = JobInvolvement)) + geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("4.4% of the Company has a Low Level of Job Involvement") + xlab("") + ylab("") + geom_hline(data=noattrit, aes(yintercept = .9554), colour="black")
+#####<font color="midnightblue">Job Involvement</font>
+```{r, fig.width=10}
+ ggplot(data=as.data.frame(table(noattrit$Department,noattrit$JobInvolvement,dnn=list("Department","JobInvolvement"))), aes(x= reorder(Department,Freq),y=Freq, fill = JobInvolvement)) + geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("4.4% of the Company has a Low Level of Job Involvement") + xlab("") + ylab("") + geom_hline(data=noattrit, aes(yintercept = .9554), colour="black")+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4", "mistyrose4")))
 
 t.test(table(noattrit$DeptCode, noattrit$JobInvolvement))
 ```
 
-#### Number of Years with Current Manager
+####<font color="midnightblue">Number of Years with Current Manager</font>
 
 
-```{r}
-ggplot(data=noattrit, aes(x=factor(noattrit$YearsWithCurrManager))) + geom_histogram(stat="count",position = "dodge") +xlab("Years") + scale_x_discrete(name='Years With Current Manager') + ggtitle("Years With Current Manager")
+```{r, fig.width=10}
+ggplot(data=noattrit, aes(x=factor(noattrit$YearsWithCurrManager))) + geom_histogram(stat="count",position = "dodge", fill="steelblue4") +xlab("Years")+ylab("Number of Employees") + scale_x_discrete(name='Years With Current Manager') + ggtitle("Years With Current Manager")+theme(plot.title=element_text(hjust=0.5))
 ```
 
 #####Observations:
-#####Multiple Modal Distribution
+**Multiple Modal Distribution**  
 
-##### Education
+#####<font color="midnightblue">Education</font>
 
-```{r}
+```{r, fig.width=10}
 cat("Percentage of Employees with No College-Level Education:",paste(100*as.numeric(format(nrow(as.data.frame(noattrit[( noattrit$Education == 1),]))/1233,digits=1)),"%"))
 
-ggplot(data=noattrit, aes(x=factor(noattrit$Education))) + geom_histogram(stat="count",position = "dodge") +xlab(" ") + scale_x_discrete(name='Education') + ggtitle("Education Level")
+ggplot(data=noattrit, aes(x=factor(noattrit$Education))) + geom_histogram(stat="count",position = "dodge", fill="steelblue4") +xlab(" ") + scale_x_discrete(name='Education') + ggtitle("Education Level")+theme(plot.title=element_text(hjust=0.5))
 ```
 
 
 
-#### Compensation is based on Work Experience not Performance
+####Compensation is based on Work Experience not Performance
 
-##### Job Level vs Total Working Years
-```{r}
-ggplot(data=noattrit,aes(x= JobLevel,y=noattrit$TotalWorkingYears, group=JobLevel)) + geom_boxplot() + coord_flip() + ggtitle("Work Experience Correlates to Job Level") + xlab("Job Level")+ylab("Years")
+#####<font color="midnightblue">Job Level vs. Total Working Years</font>
+```{r, fig.width=10}
+ggplot(data=noattrit,aes(x= JobLevel,y=noattrit$TotalWorkingYears, group=JobLevel)) + geom_boxplot() + coord_flip() + ggtitle("Work Experience Correlates to Job Level") + xlab("Job Level")+ylab("Years")+theme(plot.title=element_text(hjust=0.5))
 
 ```
-#####Working Years vs Monthly Income
-```{r }
+
+#####<font color="midnightblue">Working Years vs. Monthly Income</font>
+```{r, fig.width=10}
 ggplot(data=noattrit,aes(x=noattrit$TotalWorkingYears,
 y=noattrit$MonthlyIncome,col=factor(noattrit$JobLevel))) +
-geom_point()  + ggtitle("Total Working Years is Correlated to Job Level \np-value <.00001") + xlab("")+ylab("")
+geom_point()  + ggtitle("Total Working Years is Correlated to Job Level \n(p-value <.00001)") + xlab("Working Years")+ylab("Monthly Income")+theme(plot.title=element_text(hjust=0.5))+scale_color_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4", "mistyrose4", "lightcyan3")))
 
 results <- lm(noattrit$JobLevel~noattrit$TotalWorkingYears)
 summary(results)
@@ -525,11 +555,11 @@ summary(results)
  
 ```
 
-#### Total Time At Company vs Monthly Income
+#####<font color="midnightblue">Total Time at Company vs. Monthly Income</font>
 
-```{r}
+```{r, fig.width=10}
 ggplot(data=noattrit,aes(x=noattrit$YearsAtCompany, y=noattrit$MonthlyIncome,col=factor(noattrit$JobLevel))) +
-geom_point()  + ggtitle("Years At Company vs Monthly Income by JobLevel") + xlab("")+ylab("")
+geom_point()  + ggtitle("Years At Company vs Monthly Income by JobLevel") + xlab("Years at Company")+ylab("Monthly Income")+theme(plot.title=element_text(hjust=0.5))+scale_color_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4", "mistyrose4", "lightcyan3")))
 
  results <- lm(noattrit$MonthlyIncome ~ noattrit$JobLevel + noattrit$TotalWorkingYears + noattrit$YearsAtCompany)
  summary(results)
@@ -538,28 +568,28 @@ geom_point()  + ggtitle("Years At Company vs Monthly Income by JobLevel") + xlab
 
 
 ##### Performance Rating
-```{r}
-ggplot(data=noattrit, aes(x=factor(noattrit$PerformanceRating))) + geom_histogram(stat="count",position = "dodge") +xlab(" ") + scale_x_discrete(name='Education') + ggtitle("Everyone Receives a Performance Rating of Excellent or Outstanding")
+```{r, fig.width=10}
+ggplot(data=noattrit, aes(x=factor(noattrit$PerformanceRating))) + geom_histogram(stat="count",position = "dodge", fill="steelblue4") +xlab(" ") + scale_x_discrete(name='Education') + ggtitle("Everyone Receives a Performance Rating of Excellent or Outstanding")+theme(plot.title=element_text(hjust=0.5))
 
-ggplot(data=noattrit,aes(x= PerformanceRating, y=noattrit$MonthlyIncome, group=PerformanceRating)) + geom_boxplot() + ggtitle("Monthly Income by Performance Rating") + xlab("Performance Rating")+ylab("Monthly Income")
+ggplot(data=noattrit,aes(x= PerformanceRating, y=noattrit$MonthlyIncome, group=PerformanceRating)) + geom_boxplot() + ggtitle("Monthly Income by Performance Rating") + xlab("Performance Rating")+ylab("Monthly Income")+theme(plot.title=element_text(hjust=0.5))
 ```
 
-##### Years Since Promotion
-```{r}
+#####<font color="midnightblue">Years Since Promotion</font>
+```{r, fig.width=10}
 ggplot(data=noattrit,aes(x=noattrit$YearsWithCurrManager, y=noattrit$YearsSinceLastPromotion)) +
-geom_point()  + ggtitle("The Longer You Stay with a Manager the Longer Time Between Promotions") + xlab("Years With Current Manager")+ylab("Years Since Last Promotion") + stat_smooth(method="lm", se=FALSE)
+geom_point()  + ggtitle("The Longer You Stay with a Manager the Longer Time Between Promotions") + xlab("Years With Current Manager")+ylab("Years Since Last Promotion") + stat_smooth(method="lm", se=FALSE, color="midnightblue")+theme(plot.title=element_text(hjust=0.5))+scale_color_manual(values=alpha(c("steelblue4")))
 results <- lm(noattrit$YearsSinceLastPromotion ~ noattrit$YearsWithCurrManager)
 summary(results)
 
-ggplot(data=noattrit,aes(x= JobLevel,y=noattrit$YearsSinceLastPromotion, group=JobLevel)) + geom_boxplot() + coord_flip() + ggtitle("Time Since Last Promotion Increases as Job Level Increases") + xlab("Job Level")+ylab("Years")
+ggplot(data=noattrit,aes(x= JobLevel,y=noattrit$YearsSinceLastPromotion, group=JobLevel)) + geom_boxplot() + coord_flip() + ggtitle("Time Since Last Promotion Increases as Job Level Increases") + xlab("Job Level")+ylab("Years")+theme(plot.title=element_text(hjust=0.5))
 
 ```
 
-####Percent Salary Hike
+####<font color="midnightblue">Percent Salary Hike</font>
 
-```{r}
+```{r, fig.width=10}
 
-ggplot(data=noattrit,aes(x= JobLevel,y=noattrit$PercentSalaryHike, group=JobLevel)) + geom_boxplot() + coord_flip() + ggtitle("All Job Levels Received About 15% Average Salary Increase \nwith roughly similar distributions") + xlab("Job Level")+ylab("% Salary Increase")
+ggplot(data=noattrit,aes(x= JobLevel,y=noattrit$PercentSalaryHike, group=JobLevel)) + geom_boxplot() + coord_flip() + ggtitle("All Job Levels Received About 15% Average Salary Increase \nwith roughly similar distributions") + xlab("Job Level")+ylab("% Salary Increase")+theme(plot.title=element_text(hjust=0.5))
 
 ```
 
@@ -567,23 +597,23 @@ ggplot(data=noattrit,aes(x= JobLevel,y=noattrit$PercentSalaryHike, group=JobLeve
 
 
 ### Job Satisfaction
+####<font color="midnightblue">Job Satisfaction</font>
+#####<font color="midnightblue">Key Findings</font>
+**Job Satisfaction decreaseas as Hourly rate**  
+**PhDs have the highest satisfaction**  
+**People with Bachelor Degrees are the most dissatified**  
+**Satisfaction in consistent by Gender**  
+**Satisfaction varies by Job Role with R&D Manager having the lowest satisfaction and Sales Reps and HR Managers having the highest**  
 
-#####Key Findings
-#####1. Job Satisfaction decreaseas as Hourly rate 
-#####2. PhDs have the highest satisfaction
-#####3. People with Bachelor Degrees are the most dissatified
-#####4. Satisfaction in consistent by Gender
-#####5. Satisfaction varies by Job Role with R&D Manager having the lowest satisfaction and Sales Reps and HR Managers having the highest
+#####<font color="midnightblue">Hourly Rate</font>
+**Suggested by Linear Regression Modeling (See Experimentation Tab) as weak factor for Job Satisfaction (other potential factors were identified but did not pass on review)**  
 
-##### Hourly Rate
-##### Suggested by Linear Regression Modeling (See Experimentation Tab) as weak factor for Job Satisfaction (other potential factors were identified but did not pass on review)
-
-```{r}
-ggplot(data=noattrit,aes(x= JobSatisfaction,y=noattrit$HourlyRate, group=JobSatisfaction)) + geom_boxplot() + coord_flip() + ggtitle("Job Satisfaction Decreases as Hourly Rate Decreases \np-value=.05") + xlab("Job Satisfaction")+ylab("Hourly Rate")
+```{r, fig.width=10}
+ggplot(data=noattrit,aes(x= JobSatisfaction,y=noattrit$HourlyRate, group=JobSatisfaction)) + geom_boxplot() + coord_flip() + ggtitle("Job Satisfaction Decreases as Hourly Rate Decreases \np-value=.05") + xlab("Job Satisfaction")+ylab("Hourly Rate")+theme(plot.title=element_text(hjust=0.5))
 
 ```
 
-#### Visual inspection of the Top 10 common demographics suggests exploring Department, Education Field, Gender and Job Role as factors related to Job Satisfaction
+**Visual inspection of the Top 10 common demographics suggests exploring Department, Education Field, Gender and Job Role as factors related to Job Satisfaction**  
 
 ```{r}
 #recode JobSatisfaction for analysis
@@ -594,28 +624,28 @@ noattrit$JSCodeNum[noattrit$JobSatisfaction==1] <- 1L
 
 ```
 
-#### Education
-```{r}
-ggplot(data=as.data.frame(table(noattrit$Education,noattrit$JobSatisfaction,dnn=list("Education","JobSatisfaction"))), aes(x=Education,y=Freq, fill = JobSatisfaction)) + geom_bar(stat="identity",position="fill") + ggtitle("PhDs Have the Highest Job Satisfaction \n People with Bachelor Degrees Have the Lowest Job Satisfaction \np-value=.01263") + xlab("Education Level") + ylab("") + geom_abline(slope=0, intercept=0.5,  col = "black",lty=2) + coord_flip()
+####<font color="midnightblue">Education</font>
+```{r, fig.width=10}
+ggplot(data=as.data.frame(table(noattrit$Education,noattrit$JobSatisfaction,dnn=list("Education","JobSatisfaction"))), aes(x=Education,y=Freq, fill = JobSatisfaction)) + geom_bar(stat="identity",position="fill") + ggtitle("PhDs Have the Highest Job Satisfaction \n People with Bachelor Degrees Have the Lowest Job Satisfaction \n(p-value=.01263)") + xlab("Education Level") + ylab("Percent of Employees") + geom_abline(slope=0, intercept=0.5,  col = "black",lty=2) + coord_flip()+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4", "mistyrose4")))
 
-ggplot(data=as.data.frame(table(noattrit$Education,noattrit$JSCode,dnn=list("Education","JobSatisfaction"))), aes(x=Education,y=Freq, fill = JobSatisfaction)) + geom_bar(stat="identity",position="fill") + ggtitle("Job Satisfaction is Varies by Education") + xlab("") + ylab("") + geom_abline(slope=0, intercept=0.9,  col = "black",lty=2) + coord_flip()
+ggplot(data=as.data.frame(table(noattrit$Education,noattrit$JSCode,dnn=list("Education","JobSatisfaction"))), aes(x=Education,y=Freq, fill = JobSatisfaction)) + geom_bar(stat="identity",position="fill") + ggtitle("Job Satisfaction Varies by Education") + xlab("Education Level") + ylab("Percent of Employees") + coord_flip()+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4")))
 
 t.test(table(noattrit$JSCodeNum, noattrit$Education))
 ```
 
 
 
-#### Gender
-```{r}
+####<font color="midnightblue">Gender</font>
+```{r, fig.width=10}
 ggplot(data=as.data.frame(table(noattrit$Gender,noattrit$JobSatisfaction,dnn=list("Gender","JobSatisfaction"))), aes(x=Gender,y=Freq, fill = JobSatisfaction)) +
-geom_bar(stat="identity",position="fill") + ggtitle("Job Satisfaction is Consistent Across Genders") + xlab("") + ylab("") + geom_abline(slope=0, intercept=0.5,  col = "black",lty=2)
+geom_bar(stat="identity",position="fill") + ggtitle("Job Satisfaction is Consistent Across Genders") + xlab("Gender") + ylab("Percent of Employees") + geom_abline(slope=0, intercept=0.5,  col = "black",lty=2)+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4", "mistyrose4")))
 ```
 
 
-#### Job Role
+####<font color="midnightblue">Job Role</font>
 
-```{r}
-ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$JobSatisfaction,dnn=list("JobRole","JobSatisfaction"))), aes(x=JobRole,y=Freq, fill = JobSatisfaction)) + geom_bar(stat="identity",position="fill") + ggtitle("Job Satisfaction is Varies by Job Roles \nTop Dissatisfied Roles:R&D Director  \nMost Satsifed: Sales Reps and HR Manager") + xlab("") + ylab("") + geom_abline(slope=0, intercept=0.9,  col = "black",lty=2) + coord_flip()
+```{r, fig.width=10}
+ggplot(data=as.data.frame(table(noattrit$JobRole,noattrit$JobSatisfaction,dnn=list("JobRole","JobSatisfaction"))), aes(x=JobRole,y=Freq, fill = JobSatisfaction)) + geom_bar(stat="identity",position="fill") + ggtitle("Job Satisfaction is Varies by Job Roles \nTop Dissatisfied Roles:R&D Director  \nMost Satsifed: Sales Reps and HR Manager") + xlab("") + ylab("Percent of Employees") + geom_abline(slope=0, intercept=0.9,  col = "black",lty=2) + coord_flip()+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4", "mistyrose4")))
 
 t.test(table(noattrit$JSCodeNum, noattrit$JobRole))
 ```
@@ -623,82 +653,83 @@ t.test(table(noattrit$JSCodeNum, noattrit$JobRole))
 
 ### Interesting Findings
 
+####<font color="midnightblue">Interesting Findings</font>
+#####<font color="midnightblue">Key Findings</font>
 
-#####Key Findings:
-
-##### NumCompaniesWorked has evidence of ambiguity in the data and is perhaps miscoded or inaccurate.  (See discussion below).
-##### No relationship between the difference compensation rates.  Would have expected a multiplicative relationship between DailyRate and Hourly Rate, or Daily Rate and Monthly Rate, etc.
-
-
+**NumCompaniesWorked has evidence of ambiguity in the data and is perhaps miscoded or inaccurate.  (See discussion below)**  
+**No relationship between the difference compensation rates.  Would have expected a multiplicative relationship between DailyRate and Hourly Rate, or Daily Rate and Monthly Rate, etc.**  
 
 
-#####Observaton:
-##### Strong Correlation between observation incoming order and employee number
 
 
-##### Number of Companies Worked
-```{r}
+#####Observatons
+**Strong Correlation between observation incoming order and employee number**  
+
+
+#####<font color="midnightblue">Number of Companies Worked</font>
+```{r, fig.width=10}
 summary(noattrit$NumCompaniesWorked)
 
-ggplot(data=noattrit, aes(x=factor(noattrit$NumCompaniesWorked))) + geom_histogram(stat="count",position = "dodge") +xlab("Number CompaniesWorked") + scale_x_discrete(name='Number of Companies') +ggtitle("Number of Companies Worked")
+ggplot(data=noattrit, aes(x=factor(noattrit$NumCompaniesWorked))) + geom_histogram(stat="count",position = "dodge", fill="steelblue4") +xlab("Number CompaniesWorked") + scale_x_discrete(name='Number of Companies') +ggtitle("Number of Companies Worked")+ylab("Number of Employees")+theme(plot.title=element_text(hjust=0.5))
 ```
 
-##### Observations:
-##### There maybe confusion in the coding of this variable.  What does 0 mean?  Since these are employees at this company everyone has worked at least one company.  Or maybe the variable is to be interpreted as the number of companies worked other than this one.  Seems unlikely as the most frequent value are
+#####Observations
+**There maybe confusion in the coding of this variable.  What does 0 mean?  Since these are employees at this company everyone has worked at least one company.  Or maybe the variable is to be interpreted as the number of companies worked other than this one.  Seems unlikely as the most frequent value are**  
 
 
-#### Compensation Rates - No correlations
+#### <font color="midnightblue">Compensation Rates - No correlations</font>
 
-##### Monthly Income vs Monthly Rate
+##### <font color="midnightblue">Monthly Income vs. Monthly Rate</font>
 
-```{r}
+```{r, fig.width=10}
 ggplot(data=noattrit,aes(x=noattrit$MonthlyRate, y=noattrit$MonthlyIncome)) +
-geom_point()  + ggtitle(" No Correlation between Monthly Income vs Monthly Rate \n p-value=.261") + xlab("Monthly Rate")+ylab("Monthly Income") + stat_smooth(method="lm", se=FALSE)
+geom_point()  + ggtitle(" No Correlation between Monthly Income vs Monthly Rate \n p-value=.261") + xlab("Monthly Rate")+ylab("Monthly Income") + stat_smooth(method="lm", se=FALSE, color="midnightblue")+theme(plot.title=element_text(hjust=0.5))
 
 result <- lm(noattrit$MonthlyIncome ~ noattrit$MonthlyRate)
 summary(result)
 
 ggplot(data=noattrit,aes(x=noattrit$DailyRate, y=noattrit$MonthlyIncome)) +
-geom_point()  + ggtitle(" No Correlation between Monthly Income vs Daily Rate") + xlab("Daily Rate")+ylab("Monthly Income") + stat_smooth(method="lm", se=FALSE)
+geom_point()  + ggtitle(" No Correlation between Monthly Income vs Daily Rate") + xlab("Daily Rate")+ylab("Monthly Income") + stat_smooth(method="lm", se=FALSE, color="midnightblue")+theme(plot.title=element_text(hjust=0.5))
 
 ggplot(data=noattrit,aes(x=noattrit$DailyRate, y=noattrit$MonthlyRate)) +
-geom_point()  + ggtitle(" No Correlation between Monthly Rate & Daily Rate") + xlab("Daily Rate")+ylab("Monthly Rate") + stat_smooth(method="lm", se=FALSE)
+geom_point()  + ggtitle(" No Correlation between Monthly Rate & Daily Rate") + xlab("Daily Rate")+ylab("Monthly Rate") + stat_smooth(method="lm", se=FALSE, color="midnightblue")+theme(plot.title=element_text(hjust=0.5))
 
 ggplot(data=noattrit,aes(x=noattrit$HourlyRate, y=noattrit$DailyRate)) +
-geom_point()  + ggtitle(" No Correlation between Hourly Rate & Daily Rate") + xlab("Hourly Rate")+ylab("Daily Rate") + stat_smooth(method="lm", se=FALSE)
+geom_point()  + ggtitle(" No Correlation between Hourly Rate & Daily Rate") + xlab("Hourly Rate")+ylab("Daily Rate") + stat_smooth(method="lm", se=FALSE, color="midnightblue")+theme(plot.title=element_text(hjust=0.5))
 
 ```
-```{r}
+```{r, fig.width=10}
 ggplot(data=noattrit,aes(x=noattrit$YearsAtCompany, y=noattrit$DailyRate,col=factor(noattrit$JobLevel))) +
-geom_point()  + ggtitle("Daily Rate vs Years At Company by JobLevel") + xlab("Years")+ylab("Daily Rate")
+geom_point()  + ggtitle("Daily Rate vs Years At Company by JobLevel") + xlab("Years")+ylab("Daily Rate")+theme(plot.title=element_text(hjust=0.5))+scale_color_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4", "mistyrose4", "lightcyan3")))
 ```
 
-#### The strong correlations found between TimeAtCompany & Total Working Time with Monthly Income are not evident with DailyRate, Hourly Rate nor Monthly Rate.
-#### Attempted to determine relationships using log-log, linear-log, log-linear transformations and multiplicative models. 
+**The strong correlations found between TimeAtCompany & Total Working Time with Monthly Income are not evident with DailyRate, Hourly Rate nor Monthly Rate.**  
+**Attempted to determine relationships using log-log, linear-log, log-linear transformations and multiplicative models.**   
 
 
 
 
 
 ### Experimentation
-1.Employee Number - a recoded start date?....No
-2.Linear Regression Modeling to id first order variables to differentiate factor variables
+####<font color="midnightblue">Experimentation</font>
+1.Employee Number - a recoded start date?....No  
+2.Linear Regression Modeling to id first order variables to differentiate factor variables  
 
 
-#####Employee Number is strongly correlated to the index number of the incoming data.  Perhaps the employee number is a time ordered variable related to employee start date?
+**Employee Number is strongly correlated to the index number of the incoming data.  Perhaps the employee number is a time ordered variable related to employee start date?**  
 
-```{r}
+```{r, fig.width=10}
 
 ggplot(data=noattrit,aes(x=as.integer(rownames(noattrit)), y=noattrit$EmployeeNumber)) +
-geom_point() + ggtitle("Index Number vs Employee Number") + ylab("Employee Number")+ xlab("index number")
+geom_point() + ggtitle("Index Number vs Employee Number") + ylab("Employee Number")+ xlab("Index Number")+theme(plot.title=element_text(hjust=0.5))
 
 ggplot(data=noattrit,aes(x=noattrit$EmployeeNumber, y=noattrit$YearsAtCompany)) +
-geom_point()  + ggtitle("Years At Company vs Employee \nEmployee Number is not related to start date") + xlab("Employee Number")+ylab("Years")
+geom_point()  + ggtitle("Years At Company vs Employee \nEmployee Number is not related to start date") + xlab("Employee Number")+ylab("Years")+theme(plot.title=element_text(hjust=0.5))
 ```
 
-#### Used Linear Regression Modeling to determine variables of significance between Job Roles
-#### Important first order terms in the model are: EducationField,Age,JobLevel,MonthlyIncome, Gender, JobInvolvement,NumCompaniesWorked,YearsAtCompany,YearsWithCurrManager
-```{r }
+**Used Linear Regression Modeling to determine variables of significance between Job Roles**  
+**Important first order terms in the model are: EducationField, Age, JobLevel, MonthlyIncome, Gender, JobInvolvement, NumCompaniesWorked, YearsAtCompany, YearsWithCurrManager**  
+```{r, fig.width=10}
 
 options(width = 150)
 
@@ -714,10 +745,10 @@ jr.lm <- lm(noattrit$JRCode ~noattrit$EducationField+ noattrit$Age + noattrit$Jo
 summary(jr.lm)
 
 ```
-#### The fit is not great, but perhaps sufficient enough to identify the important fit order terms to explore Job Roles
+*The fit is not great, but perhaps sufficient enough to identify the important fit order terms to explore Job Roles*  
 
-#####Linear Regression Modeling for Job Satisfaction first order factors
-```{r}
+**Linear Regression Modeling for Job Satisfaction first order factors**  
+```{r, fig.width=10}
 js.lm <- lm(noattrit$JobSatisfaction ~ noattrit$BusinessTravel+ noattrit$EducationField+ noattrit$Gender+ noattrit$OverTime+ noattrit$MaritalStatus+ noattrit$Age+ noattrit$DailyRate+ noattrit$DistanceFromHome+ noattrit$Education+ noattrit$EmployeeNumber+ noattrit$EnvironmentSatisfaction+ noattrit$HourlyRate+ noattrit$JobInvolvement+ noattrit$JobLevel+ noattrit$JobRole+ noattrit$MonthlyIncome+ noattrit$MonthlyRate+ noattrit$NumCompaniesWorked+ noattrit$PercentSalaryHike+ noattrit$PerformanceRating+ noattrit$RelationshipSatisfaction+ noattrit$StockOptionLevel+ noattrit$TotalWorkingYears+ noattrit$TrainingTimesLastYear+ noattrit$WorkLifeBalance+ noattrit$YearsAtCompany+ noattrit$YearsInCurrentRole+ noattrit$YearsSinceLastPromotion+ noattrit$YearsWithCurrManager)
 summary(js.lm)
 
@@ -729,32 +760,32 @@ summary(js.lm)
 #####Note:  The fit is poor, but may provide directionality as to first order factors to assess.
 ```
 
-##### Linear Regression Modeling suggests that Overtime, Marital Status, Hourly Rate, and Relationship Satisfaction may be factors related to Job Satisfaction.  This method didn't work as well as with understanding of Job Roles.  Only one of the four variables has a good correlation to Job Satisfaction, Hourly Rate.
+**Linear Regression Modeling suggests that Overtime, Marital Status, Hourly Rate, and Relationship Satisfaction may be factors related to Job Satisfaction. This method didn't work as well as with understanding of Job Roles.  Only one of the four variables has a good correlation to Job Satisfaction, Hourly Rate.**  
 
 
-######Overtime
-```{r}
+#####<font color="midnightblue">Overtime</font>
+```{r, fig.width=10}
 
 ggplot(data=as.data.frame(table(attrit$JobSatisfaction,attrit$OverTime,dnn=list("JobSatisfaction","OverTime"))), aes(x= reorder(JobSatisfaction,Freq),y=Freq, fill = OverTime)) +
-geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("% of People Who Have Over Time is Consistent for All Job Satisfation Levels") + xlab("") + ylab("") + geom_abline(slope=0, intercept=0.5,  col = "black",lty=2)
+geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Percent of People Who Have Over Time is Consistent for All Job Satisfation Levels") + xlab("") + ylab("Percent of Employees") + geom_abline(slope=0, intercept=0.5,  col = "black",lty=2)+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4")))
 
 ```
 
-##### Marital Status
-```{r}
+#####<font color="midnightblue">Marital Status</font>
+```{r, fig.width=10}
 ggplot(data=as.data.frame(table(attrit$JobSatisfaction,attrit$MaritalStatus,dnn=list("JobSatisfaction","MaritalStatus"))), aes(x= reorder(JobSatisfaction,Freq),y=Freq, fill = MaritalStatus)) +
-geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Job Satisfaction by Marital Status is Consistent") + xlab("") + ylab("") + geom_abline(slope=0, intercept=0.5,  col = "black",lty=2)
+geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Job Satisfaction by Marital Status is Consistent") + xlab("Job Satisfaction Level") + ylab("Percent of Employees") + geom_abline(slope=0, intercept=0.5,  col = "black",lty=2)+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4")))
 
 ```
 
-##### Relationship Satisfaction
-```{r}
+##### <font color="midnightblue">Relationship Satisfaction</font>
+```{r, fig.width=10}
 ggplot(data=as.data.frame(table(attrit$JobSatisfaction,attrit$RelationshipSatisfaction,dnn=list("JobSatisfaction","RelationshipSatisfaction"))), aes(x= reorder(JobSatisfaction,Freq),y=Freq, fill = factor(RelationshipSatisfaction))) +
-geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Job Satisfaction by Relationship Satisfaction is Consistent") + xlab("") + ylab("") + geom_abline(slope=0, intercept=0.5,  col = "black",lty=2)
+geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Job Satisfaction by Relationship Satisfaction is Consistent") + xlab("Job Satisfaction Level") + ylab("Percent of Employees") + geom_abline(slope=0, intercept=0.5,  col = "black",lty=2)+theme(plot.title=element_text(hjust=0.5))+scale_fill_manual(values=alpha(c("steelblue4", "thistle4", "paleturquoise4", "mistyrose4")))
 
 ```
 
-##### Find common demographics for people with high/lo job satisfaction
+**Find common demographics for people with high/lo job satisfaction**  
 ```{r}
 JS.4 <- noattrit[noattrit$JobSatisfaction==4,]
 JS.3 <- noattrit[noattrit$JobSatisfaction==3,]
@@ -768,7 +799,7 @@ countdemohighjs<- count(demohighjs)
 head(countdemohighjs[order(countdemohighjs$freq,decreasing = TRUE),],10)
 
 ```
-#### Visual inspection of the Top 10 common demographics suggests exoloring Department, Education Field, Gender and Job Role as factors related to Job Satisfaction
+**Visual inspection of the Top 10 common demographics suggests exoloring Department, Education Field, Gender and Job Role as factors related to Job Satisfaction**  
 
 ==
 
