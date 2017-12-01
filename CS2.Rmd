@@ -359,7 +359,7 @@ geom_bar(stat="identity",position="fill") + coord_flip() + ggtitle("Education by
 **People with Education in Human Resources work in the Human Resources Department**  
 **R&D is predominantly composed of people with Life Sciences and Medical Education**  
 **No PhD Sales Reps nor HR Managers**  
-**All HR Managers Have Some College (unique from all other job roles)"**  
+**All HR Managers Have Some College (unique from all other job roles)**  
 **Sales Reps have the highest percentage of employees with college-level education (25%)** 
 
 ####<font color="midnightblue">Age</font>  
@@ -569,7 +569,7 @@ geom_point()  + ggtitle("Years At Company vs Monthly Income by JobLevel") + xlab
 
 ##### Performance Rating
 ```{r, fig.width=10}
-ggplot(data=noattrit, aes(x=factor(noattrit$PerformanceRating))) + geom_histogram(stat="count",position = "dodge", fill="steelblue4") +xlab(" ") + scale_x_discrete(name='Education') + ggtitle("Everyone Receives a Performance Rating of Excellent or Outstanding")+theme(plot.title=element_text(hjust=0.5))
+ggplot(data=noattrit, aes(x=factor(noattrit$PerformanceRating))) + geom_histogram(stat="count",position = "dodge", fill="steelblue4") +xlab(" ") + scale_x_discrete(name='Performance Rating') + ggtitle("Everyone Receives a Performance Rating of Excellent or Outstanding")+theme(plot.title=element_text(hjust=0.5))
 
 ggplot(data=noattrit,aes(x= PerformanceRating, y=noattrit$MonthlyIncome, group=PerformanceRating)) + geom_boxplot() + ggtitle("Monthly Income by Performance Rating") + xlab("Performance Rating")+ylab("Monthly Income")+theme(plot.title=element_text(hjust=0.5))
 ```
