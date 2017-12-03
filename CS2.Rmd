@@ -172,7 +172,7 @@ attach(attrition)
 #### Need logistic regression
 
 #### *** The next several steps are the model fitting steps 
-#### Model fitting (Steps 1~zz) 
+#### Model fitting (Steps 1 thru 8) 
 
 ##### 1. Split the data into train and test data 
 ###### We want to be able to create an appropriate model the test that model on a subset of the data. We will create a "training" dataset and a "test" one. 
@@ -272,14 +272,14 @@ print(paste('Accuracy',1-misClasificError))
 ```
 ###### We see a 91% accuracy of the model against test data, so we are good. 
 
-##### 6. Run Final model against all data. 
+##### 7. Run Final model against all data. 
 ###### Now we ned to run the Final model against all the data. 
 ```{r, include=TRUE, echo=TRUE, fig.width=10}
 final.model.alldata<-glm(formula=Attrition~OverTime+JobRole+JobLevel+EnvironmentSatisfaction+BusinessTravel+NumCompaniesWorked+JobInvolvement+JobSatisfaction+DistanceFromHome, family = binomial(link="logit"), data=attrition)
 summary(final.model.alldata)
 ```
 
-##### 7. Obtain Odd Ratio of covariences 
+##### 8. Obtain Odd Ratio of covariences 
 ###### The Estimate in the final model is given in terms of Log Odds. Need to invert to obtain actual Odd Ratios of the top variables and sort output
 ```{r, include=FALSE, echo=TRUE, fig.width=10}
 sort(exp(final.model.alldata$coefficients[-1]),decreasing=T) 
