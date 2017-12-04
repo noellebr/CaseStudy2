@@ -599,7 +599,7 @@ ggplot(data=noattrit,aes(x= JobLevel,y=noattrit$PercentSalaryHike, group=JobLeve
 ### Job Satisfaction
 ####<font color="midnightblue">Job Satisfaction</font>
 #####<font color="midnightblue">Key Findings</font>
-**Job Satisfaction decreaseas as Hourly rate**  
+**Job Satisfaction Increases as Hourly Rate Decreases**  
 **PhDs have the highest satisfaction**  
 **People with Bachelor Degrees are the most dissatified**  
 **Satisfaction in consistent by Gender**  
@@ -609,7 +609,7 @@ ggplot(data=noattrit,aes(x= JobLevel,y=noattrit$PercentSalaryHike, group=JobLeve
 **Suggested by Linear Regression Modeling (See Experimentation Tab) as weak factor for Job Satisfaction (other potential factors were identified but did not pass on review)**  
 
 ```{r, fig.width=10}
-ggplot(data=noattrit,aes(x= JobSatisfaction,y=noattrit$HourlyRate, group=JobSatisfaction)) + geom_boxplot() + coord_flip() + ggtitle("Job Satisfaction Decreases as Hourly Rate Decreases \np-value=.05") + xlab("Job Satisfaction")+ylab("Hourly Rate")+theme(plot.title=element_text(hjust=0.5))
+ggplot(data=noattrit,aes(x= JobSatisfaction,y=noattrit$HourlyRate, group=JobSatisfaction)) + geom_boxplot() + coord_flip() + ggtitle("Job Satisfaction Inreases as Hourly Rate Decreases \np-value=.05") + xlab("Job Satisfaction")+ylab("Hourly Rate")+theme(plot.title=element_text(hjust=0.5))
 
 ```
 
