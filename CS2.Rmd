@@ -300,6 +300,20 @@ JobRoleManager	|	1.5547907
 NumCompaniesWorked	|	1.119052
 DistanceFromHome	|	1.0362319 
 
+###### REFERENCES 
+Czado, C. (1997). On selecting parametric link transformation families in generalized linear models. J. Statist. Plann. Inference 61, 125–139.
+Hastie, T. and R. Tibshirani (1999). Generalized additive models (2nd edition). London: Chapman & Hall.
+Author, A. A. (Year of publication). Title of work: Capital letter also for subtitle. Location: Publisher.
+Ramsey, Fred (2013). The Statistical Sleuth. Chapters 20-23. 
+Lecture 20 - Logistic Regression. Retrieved from https://www2.stat.duke.edu/courses/Spring13/sta102.001/Lec/Lec20.pdf
+Multivariate Logistic Regression. Retrieved from http://www.med.mcgill.ca/epidemiology/joseph/courses/EPIB-621/logistic2.pdf
+Multiple logistic regression. Handbook of Biological Statistics. Retrieved from http://www.biostathandbook.com/multiplelogistic.html
+Binary Response and Logistic Regression Analysis. Retrieved from http://www.stat.wisc.edu/~mchung/teaching/MIA/reading/GLM.logistic.Rpackage.pdf
+An R Companion for the Handbook of Biological Statistics. Retrieved from https://rcompanion.org/rcompanion/e_07.html
+Simple Guide to Logistic Regression in R. Retrieved from https://www.analyticsvidhya.com/blog/2015/11/beginners-guide-on-logistic-regression-in-r/
+How to Perform a Logistic Regression in R. Retrieved from https://datascienceplus.com/perform-logistic-regression-in-r/
+Cookbook for R. Logistic regression. Retrieved from http://www.cookbook-r.com/Statistical_analysis/Logistic_regression/ 
+
 ### Job Roles
 
 ####<font color="midnightblue">Job Roles</font>  
